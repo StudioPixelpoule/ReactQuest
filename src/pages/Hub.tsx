@@ -51,17 +51,14 @@ export default function Hub() {
   const { completedQuests, isQuestUnlocked, xp } = usePlayerStore();
   const [showIntro, setShowIntro] = useState(false);
   
-  // Show intro modal when XP is 0
   useEffect(() => {
     if (xp === 0) {
       setShowIntro(true);
     }
   }, [xp]);
   
-  // Calculate progress percentage
   const progressPercent = (xp / TOTAL_XP) * 100;
   
-  // Calculate current district and total districts for progress
   const currentDistrict = districts.findIndex(district => {
     const districtQuests = quests.filter(q => q.district === district.id);
     return districtQuests.some(q => !completedQuests.includes(q.id));
@@ -91,7 +88,7 @@ export default function Hub() {
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
               <img 
-                src={images.logo.color} 
+                src="/assets/images/logo/logo_color.png" 
                 alt="Logo" 
                 className="h-8 w-auto"
               />
@@ -139,7 +136,6 @@ export default function Hub() {
                     variants={districtVariants}
                     className="relative"
                   >
-                    {/* District Header */}
                     <div className="relative z-10 mb-8">
                       <motion.div
                         initial={{ scale: 0.95, opacity: 0 }}
@@ -174,9 +170,7 @@ export default function Hub() {
                       </motion.div>
                     </div>
 
-                    {/* Quests Grid */}
                     <div className="relative">
-                      {/* Decorative Elements */}
                       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent -z-10 rounded-3xl" />
                       <div className="absolute inset-0 bg-grid-white/5 -z-10 rounded-3xl" 
                         style={{

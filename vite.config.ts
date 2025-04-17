@@ -10,12 +10,10 @@ export default defineConfig({
     },
   },
   build: {
-    // Copy assets to assets directory in production
-    assetsDir: 'assets',
     // Generate source maps for better debugging
     sourcemap: true,
+    // Copy public assets to build output
+    copyPublicDir: true,
   },
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-  },
+  publicDir: 'public',
 });

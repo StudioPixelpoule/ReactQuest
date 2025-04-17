@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -7,10 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ReactBot } from '@/components/ReactBot';
 import { usePlayerStore } from '@/lib/store';
+import { useAudio } from '@/components/AudioProvider';
 import { toast } from 'sonner';
-import { Code2, Rocket, Blocks, Cpu, Volume2 } from 'lucide-react';
-import { images } from '@/assets/images';
-import { getAssetPath } from '@/lib/utils/assets';
+import { Code2, Rocket, Blocks, Cpu, Volume2, VolumeX } from 'lucide-react';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -56,20 +55,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const { setUsername: setPlayerUsername } = usePlayerStore();
-  const [audio] = useState(new Audio(getAssetPath('src/assets/audio/audio.mp3')));
-
-  useEffect(() => {
-    audio.loop = true;
-    audio.volume = 0.3;
-    audio.play().catch(() => {
-      console.log('Autoplay prevented');
-    });
-
-    return () => {
-      audio.pause();
-      audio.currentTime = 0;
-    };
-  }, [audio]);
+  const { startAudio, isStarted, isMuted, toggleMute } = useAudio();
 
   const handleStart = () => {
     if (!username.trim()) {
@@ -161,7 +147,7 @@ export default function LandingPage() {
                   <Code2 className="h-8 w-8 text-primary" />
                 </motion.div>
                 <img 
-                  src={images.logo.color} 
+                  src="/assets/images/logo/logo_color.png" 
                   alt="Logo" 
                   className="h-16 w-auto mx-auto"
                 />
@@ -187,19 +173,47 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-2">
-              <Button
-                size="lg"
-                className="w-full text-lg h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary"
-                onClick={handleStart}
-              >
-                Commencer l'Aventure
-                <Rocket className="ml-2 h-5 w-5" />
-              </Button>
-              <div className="flex items-center justify-center gap-1 text-sm text-muted-foreground">
-                <Volume2 className="h-4 w-4" />
-                <span>Activez le son pour une meilleure expérience</span>
-              </div>
+            <motion.div variants={itemVariants} className="space-y-4">
+              {!isStarted ? (
+                <Button
+                  size="lg"
+                  className="w-full text-lg h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary gap-2"
+                  onClick={startAudio}
+                >
+                  Activer le Son
+                  <Volume2 className="h-5 w-5" />
+                </Button>
+              ) : (
+                <Button
+                  size="lg"
+                  className="w-full text-lg h-12 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary"
+                  onClick={handleStart}
+                >
+                  Commencer l'Aventure
+                  <Rocket className="ml-2 h-5 w-5" />
+                </Button>
+              )}
+              
+              {isStarted && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleMute}
+                  className="w-full gap-2"
+                >
+                  {isMuted ? (
+                    <>
+                      <VolumeX className="h-4 w-4" />
+                      <span>Son désactivé</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="h-4 w-4" />
+                      <span>Son activé</span>
+                    </>
+                  )}
+                </Button>
+              )}
             </motion.div>
           </Card>
         </motion.div>

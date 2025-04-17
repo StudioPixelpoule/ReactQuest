@@ -8,11 +8,12 @@ import Quest from '@/pages/Quest';
 import Profile from '@/pages/Profile';
 import Settings from '@/pages/Settings';
 import { ThemeProvider } from '@/components/theme-provider';
+import { FUTURE_FLAGS } from '@/lib/utils/router-flags';
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Router>
+      <Router future={FUTURE_FLAGS}>
         <AudioProvider>
           <AnimatePresence mode="wait">
             <Routes>
