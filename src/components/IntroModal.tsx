@@ -72,23 +72,35 @@ interface IntroModalProps {
 
 export function IntroModal({ open, onOpenChange }: IntroModalProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [audio] = useState(new Audio('/src/assets/audio/audio2.mp3'));
+  const [audio] = useState(() => {
+    console.log('[Modal] Creating modal audio instance');
+    const audio = new Audio('/assets/audio/audio2.mp3');
+    audio.loop = true;
+    audio.volume = 0.3;
+    audio.addEventListener('play', () => {
+      console.log('[Modal] Modal audio started playing');
+    });
+    audio.addEventListener('pause', () => {
+      console.log('[Modal] Modal audio paused');
+    });
+    audio.addEventListener('error', (e) => {
+      console.error('[Modal] Modal audio error:', e);
+    });
+    return audio;
+  });
   const { pauseBackgroundMusic, resumeBackgroundMusic } = useAudio();
 
   useEffect(() => {
     if (open) {
-      // Pause background music and play modal music
+      console.log('[Modal] Opening modal, pausing background and starting modal audio');
       pauseBackgroundMusic();
-      audio.loop = true;
-      audio.volume = 0.3;
-      audio.play().catch(() => {
-        console.log('Autoplay prevented');
+      audio.play().catch(error => {
+        console.error('[Modal] Failed to play modal audio:', error);
       });
     }
     return () => {
-      // Stop modal music and resume background music
+      console.log('[Modal] Closing modal, stopping modal audio');
       audio.pause();
-      audio.currentTime = 0;
       if (open) {
         resumeBackgroundMusic();
       }
@@ -111,7 +123,10 @@ export function IntroModal({ open, onOpenChange }: IntroModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl backdrop-blur-xl bg-background/80 border-2 border-primary/20">
+      <DialogContent 
+        className="sm:max-w-2xl backdrop-blur-xl bg-background/80 border-2 border-primary/20"
+        aria-describedby="modal-description"
+      >
         <DialogTitle className="sr-only">Introduction à ReactQuest</DialogTitle>
         <AnimatePresence mode="wait">
           <motion.div
@@ -120,6 +135,7 @@ export function IntroModal({ open, onOpenChange }: IntroModalProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="space-y-8 py-8"
+            id="modal-description"
           >
             <motion.h2
               initial={{ opacity: 0 }}

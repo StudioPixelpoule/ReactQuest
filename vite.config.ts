@@ -16,4 +16,9 @@ export default defineConfig({
     copyPublicDir: true,
   },
   publicDir: 'public',
+  server: {
+    watch: {
+      usePolling: true,
+    },
+  },
 });
