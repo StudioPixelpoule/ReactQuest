@@ -219,6 +219,10 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
+      <div className="relative z-10 text-center py-4 text-sm text-muted-foreground">
+        <p>© 2025 Pixel Poule. Tous droits réservés.</p>
+      </div>
+
       <ReactBot
         message="Bienvenue ! Je suis React-Bot, votre guide dans cette aventure d'apprentissage. Prêt à commencer ?"
         isFloating={true}

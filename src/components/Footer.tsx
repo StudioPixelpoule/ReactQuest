@@ -48,7 +48,7 @@ export function Footer() {
             <h4 className="font-semibold">Suivez-nous</h4>
             <div className="flex gap-4">
               <a 
-                href="https://github.com/pixelpoule" 
+                href="https://github.com/pixelpointe/reactquest" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -56,7 +56,7 @@ export function Footer() {
                 <Github className="h-5 w-5" />
               </a>
               <a 
-                href="https://twitter.com/pixelpoule" 
+                href="https://twitter.com/reactquest" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-primary transition-colors"
@@ -68,9 +68,13 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© 2025 Pixel Poule. Tous droits réservés.</p>
-          <p>ReactQuest 1.0</p>
+        <div className="mt-8 pt-8 border-t text-center">
+          <p className="text-sm text-muted-foreground">
+            © 2024 ReactQuest. Tous droits réservés.
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Version 1.0
+          </p>
         </div>
       </div>
     </motion.footer>
