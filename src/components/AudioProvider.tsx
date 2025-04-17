@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { getAssetPath } from '@/lib/utils/assets';
 
 interface AudioContextType {
   isMuted: boolean;
@@ -10,9 +11,17 @@ interface AudioContextType {
 
 const AudioContext = createContext<AudioContextType | undefined>(undefined);
 
+export function useAudio() {
+  const context = useContext(AudioContext);
+  if (context === undefined) {
+    throw new Error('useAudio must be used within an AudioProvider');
+  }
+  return context;
+}
+
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [isMuted, setIsMuted] = useState(false);
-  const [audio] = useState(new Audio('/src/assets/audio/audio3.mp3'));
+  const [audio] = useState(new Audio(getAssetPath('src/assets/audio/audio3.mp3')));
   const location = useLocation();
 
   // Initial setup of audio - runs only once
@@ -23,7 +32,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     // Only start playing if not on landing page
     if (location.pathname !== '/') {
       audio.play().catch(() => {
-        console.log('Autoplay prevented');
+        console.log('Autoplay prevented by browser policy');
       });
     }
 
@@ -45,7 +54,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.pause();
     } else if (!isMuted) {
       audio.play().catch(() => {
-        console.log('Autoplay prevented');
+        console.log('Autoplay prevented by browser policy');
       });
     }
   }, [location.pathname, isMuted, audio]);
@@ -61,7 +70,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const resumeBackgroundMusic = () => {
     if (!isMuted && location.pathname !== '/') {
       audio.play().catch(() => {
-        console.log('Autoplay prevented');
+        console.log('Autoplay prevented by browser policy');
       });
     }
   };
@@ -76,12 +85,4 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AudioContext.Provider>
   );
-}
-
-export function useAudio() {
-  const context = useContext(AudioContext);
-  if (!context) {
-    throw new Error('useAudio must be used within an AudioProvider');
-  }
-  return context;
 }

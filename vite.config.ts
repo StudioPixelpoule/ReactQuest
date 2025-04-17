@@ -9,6 +9,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // Copy assets to assets directory in production
+    assetsDir: 'assets',
+    // Generate source maps for better debugging
+    sourcemap: true,
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },

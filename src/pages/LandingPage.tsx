@@ -10,6 +10,7 @@ import { usePlayerStore } from '@/lib/store';
 import { toast } from 'sonner';
 import { Code2, Rocket, Blocks, Cpu, Volume2 } from 'lucide-react';
 import { images } from '@/assets/images';
+import { getAssetPath } from '@/lib/utils/assets';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -55,7 +56,7 @@ export default function LandingPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const { setUsername: setPlayerUsername } = usePlayerStore();
-  const [audio] = useState(new Audio('/src/assets/audio/audio.mp3'));
+  const [audio] = useState(new Audio(getAssetPath('src/assets/audio/audio.mp3')));
 
   useEffect(() => {
     audio.loop = true;
