@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ReactBot } from '@/components/ReactBot';
 import { usePlayerStore } from '@/lib/store';
 import { useAudio } from '@/components/AudioProvider';
 import { toast } from 'sonner';
@@ -70,7 +69,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen w-full bg-background relative overflow-hidden flex flex-col">
-      {/* Animated background */}
       <div className="absolute inset-0 z-0">
         <motion.div
           className="absolute inset-0"
@@ -90,7 +88,6 @@ export default function LandingPage() {
         />
       </div>
 
-      {/* Floating icons */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <motion.div
           variants={floatingIconVariants}
@@ -120,7 +117,6 @@ export default function LandingPage() {
         </motion.div>
       </div>
 
-      {/* Main content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center">
         <motion.div
           className="w-full max-w-lg mx-auto px-4"
@@ -222,11 +218,6 @@ export default function LandingPage() {
       <div className="relative z-10 text-center py-4 text-sm text-muted-foreground">
         <p>© 2025 Pixel Poule. Tous droits réservés.</p>
       </div>
-
-      <ReactBot
-        message="Bienvenue ! Je suis React-Bot, votre guide dans cette aventure d'apprentissage. Prêt à commencer ?"
-        isFloating={true}
-      />
     </div>
   );
 }

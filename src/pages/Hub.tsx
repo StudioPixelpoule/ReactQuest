@@ -3,18 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { BuildingCard } from '@/components/BuildingCard';
 import { PlayerStats } from '@/components/PlayerStats';
-import { ReactBot } from '@/components/ReactBot';
 import { Footer } from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { IntroModal } from '@/components/IntroModal';
 import { quests, districts } from '@/lib/quests';
 import { usePlayerStore } from '@/lib/store';
-import { useAudio } from '@/components/AudioProvider';
 import { AudioToggle } from '@/components/AudioToggle';
-import { Settings, User, Zap, Layout, Volume2, VolumeX, type LucideIcon } from 'lucide-react';
+import { Settings, User, Zap, Layout, type LucideIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { images } from '@/assets/images';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
 const TOTAL_XP = 12950;
@@ -200,11 +197,6 @@ export default function Hub() {
             </div>
           </div>
         </main>
-
-        <ReactBot
-          message="Bienvenue à TechTopia ! Chaque quartier représente un domaine d'apprentissage. Explore-les pour devenir un expert React !"
-          isFloating={true}
-        />
 
         <Footer />
       </div>

@@ -35,7 +35,6 @@ export default function Quest() {
     );
   }
 
-  // Vérifier si la quête est débloquée
   if (!isQuestUnlocked(quest.id)) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
@@ -57,10 +56,8 @@ export default function Quest() {
   const currentStep = steps[step];
   const progressPercent = ((step + 1) / steps.length) * 100;
 
-  // Initialiser le code avec le code de départ de l'étape courante
   const [code, setCode] = useState(currentStep.initialCode);
 
-  // Mettre à jour le code quand on change d'étape
   useEffect(() => {
     setCode(currentStep.initialCode);
     setShowHint(false);
