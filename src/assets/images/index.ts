@@ -1,0 +1,48 @@
+// Export des images pour une utilisation facile
+export const images = {
+  logo: {
+    dark: '/src/assets/images/logo/logo-dark.svg',
+    light: '/src/assets/images/logo/logo-light.svg',
+    color: '/src/assets/images/logo/logo_color.png'
+  },
+  backgrounds: {
+    grid: '/src/assets/images/backgrounds/grid.svg',
+    dots: '/src/assets/images/backgrounds/dots.svg',
+  },
+  districts: {
+    foundations: '/src/assets/images/districts/foundations.svg',
+    effects: '/src/assets/images/districts/effects.svg',
+    patterns: '/src/assets/images/districts/patterns.svg',
+    routing: '/src/assets/images/districts/routing.svg',
+    state: '/src/assets/images/districts/state.svg',
+    data: '/src/assets/images/districts/data.svg',
+    forms: '/src/assets/images/districts/forms.svg',
+    optimization: '/src/assets/images/districts/optimization.svg',
+    final: '/src/assets/images/districts/final.svg',
+  },
+  badges: {
+    componentMaster: '/src/assets/images/badges/component-master.svg',
+    stateWizard: '/src/assets/images/badges/state-wizard.svg',
+    effectSage: '/src/assets/images/badges/effect-sage.svg',
+    domMaster: '/src/assets/images/badges/dom-master.svg',
+    persistentCoder: '/src/assets/images/badges/persistent-coder.svg',
+    structuralThinker: '/src/assets/images/badges/structural-thinker.svg',
+    hookMaster: '/src/assets/images/badges/hook-master.svg',
+    routerExplorer: '/src/assets/images/badges/router-explorer.svg',
+    layoutArchitect: '/src/assets/images/badges/layout-architect.svg',
+    routingCommander: '/src/assets/images/badges/routing-commander.svg',
+    contextCraftsman: '/src/assets/images/badges/context-craftsman.svg',
+    reduxMaster: '/src/assets/images/badges/redux-master.svg',
+    stateRefactorChampion: '/src/assets/images/badges/state-refactor-champion.svg',
+    apiMaster: '/src/assets/images/badges/api-master.svg',
+    queryWizard: '/src/assets/images/badges/query-wizard.svg',
+    dataArchitect: '/src/assets/images/badges/data-architect.svg',
+    formScholar: '/src/assets/images/badges/form-scholar.svg',
+    formMaster: '/src/assets/images/badges/form-master.svg',
+    formExpert: '/src/assets/images/badges/form-expert.svg',
+    speedArchitect: '/src/assets/images/badges/speed-architect.svg',
+    testGuardian: '/src/assets/images/badges/test-guardian.svg',
+    ultimateOptimizer: '/src/assets/images/badges/ultimate-optimizer.svg',
+    supremeArchitect: '/src/assets/images/badges/supreme-architect.svg',
+  },
+};
