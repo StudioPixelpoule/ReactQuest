@@ -1,7 +1,8 @@
 import Editor from "@monaco-editor/react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Code, PlayCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Code, PlayCircle, CheckCircle2, XCircle, Code2 } from 'lucide-react';
 
 interface QuestEditorProps {
   code: string;
@@ -11,6 +12,9 @@ interface QuestEditorProps {
   isSuccess: boolean;
   hint: string;
   successMessage: string;
+  onHintClose?: () => void;
+  showSolution?: boolean;
+  solution?: string;
 }
 
 export function QuestEditor({
@@ -20,7 +24,10 @@ export function QuestEditor({
   showHint,
   isSuccess,
   hint,
-  successMessage
+  successMessage,
+  onHintClose,
+  showSolution,
+  solution
 }: QuestEditorProps) {
   return (
     <div className="h-full border rounded-lg">
@@ -30,19 +37,32 @@ export function QuestEditor({
             <Code className="h-5 w-5" />
             <h2 className="font-semibold">Éditeur de Code</h2>
           </div>
-          <Button
-            onClick={onVerify}
-            size="sm"
-            className="gap-2"
-            disabled={isSuccess}
-          >
-            <PlayCircle className="h-4 w-4" />
-            Vérifier mon code
-          </Button>
+          <div className="flex items-center gap-2">
+            {showSolution && solution && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => onCodeChange(solution)}
+              >
+                <Code2 className="h-4 w-4" />
+                Solution
+              </Button>
+            )}
+            <Button
+              onClick={onVerify}
+              size="sm"
+              className="gap-2"
+              disabled={isSuccess}
+            >
+              <PlayCircle className="h-4 w-4" />
+              Vérifier mon code
+            </Button>
+          </div>
         </div>
       </div>
       
-      <div className="h-[calc(100%-10rem)]">
+      <div className="flex-1 h-[calc(100%-8rem)]">
         <Editor
           height="100%"
           defaultLanguage="typescript"
@@ -61,21 +81,35 @@ export function QuestEditor({
         />
       </div>
 
-      <div className="p-4">
-        {showHint && !isSuccess && (
-          <Alert variant="destructive">
-            <XCircle className="h-4 w-4" />
-            <AlertDescription className="ml-2">{hint}</AlertDescription>
-          </Alert>
-        )}
+      <Dialog open={showHint} onOpenChange={() => onHintClose?.()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <XCircle className="h-5 w-5" />
+              Pas tout à fait !
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              {hint}
+            </p>
+            <Button 
+              variant="outline" 
+              className="w-full"
+              onClick={() => onHintClose?.()}
+            >
+              Réessayer
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
-        {isSuccess && (
-          <Alert className="bg-primary/10 text-primary border-primary">
-            <CheckCircle2 className="h-4 w-4" />
-            <AlertDescription className="ml-2">{successMessage}</AlertDescription>
-          </Alert>
-        )}
-      </div>
+      {isSuccess && (
+        <Alert className="m-4 bg-primary/10 text-primary border-primary">
+          <CheckCircle2 className="h-4 w-4" />
+          <AlertDescription className="ml-2">{successMessage}</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }

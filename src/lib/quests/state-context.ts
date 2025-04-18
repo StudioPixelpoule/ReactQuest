@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const contextQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "🏭 Introduction — Étape 1",
     content: `
@@ -50,13 +50,47 @@ export function useTheme() {
   }
   return context;
 }`,
-    validate: (code: string) =>
-      code.includes("createContext") &&
-      code.includes("ThemeProvider") &&
-      code.includes("useTheme") &&
-      code.includes("toggleTheme"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("createContext") &&
+             code.includes("ThemeProvider") &&
+             code.includes("useTheme") &&
+             code.includes("toggleTheme");
+    },
     hint: "Vérifie que tu as :\n- Créé le contexte avec createContext\n- Défini le Provider avec l'état theme\n- Créé le hook useTheme\n- Géré le cas où le contexte est undefined",
-    successMessage: "Bravo ! Tu as créé ton premier contexte typé.\nC'est la base pour partager des données globalement !"
+    successMessage: "Bravo ! Tu as créé ton premier contexte typé.\nC'est la base pour partager des données globalement !",
+    solution: `import { createContext, useState, useContext } from "react";
+
+type Theme = "light" | "dark";
+
+interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<Theme>("light");
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider");
+  }
+  return context;
+}`
   },
   {
     title: "🔸 Étape 2 — Consommer le contexte",
@@ -98,13 +132,40 @@ function App() {
     </ThemeProvider>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("useTheme") &&
-      code.includes("theme") &&
-      code.includes("toggleTheme") &&
-      code.includes("onClick"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useTheme") &&
+             code.includes("theme") &&
+             code.includes("toggleTheme") &&
+             code.includes("onClick");
+    },
     hint: "N'oublie pas :\n- D'utiliser le hook useTheme\n- D'extraire theme et toggleTheme\n- D'afficher le thème actuel\n- D'appeler toggleTheme au clic",
-    successMessage: "Super ! Tu sais maintenant utiliser un contexte dans tes composants."
+    successMessage: "Super ! Tu sais maintenant utiliser un contexte dans tes composants.",
+    solution: `function ThemeSwitcher() {
+  const { theme, toggleTheme } = useTheme();
+  
+  return (
+    <div className="p-4 border rounded-lg">
+      <p className="mb-2">
+        Thème actuel : {theme}
+      </p>
+      <button
+        onClick={toggleTheme}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded-md"
+      >
+        Changer de thème
+      </button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <ThemeSwitcher />
+    </ThemeProvider>
+  );
+}`
   },
   {
     title: "🔹 Étape 3 — Contexte avec actions",
@@ -153,13 +214,63 @@ export function useUser() {
   }
   return context;
 }`,
-    validate: (code: string) =>
-      code.includes("login") &&
-      code.includes("logout") &&
-      code.includes("toggleRole") &&
-      code.includes("setUser"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("login") &&
+             code.includes("logout") &&
+             code.includes("toggleRole") &&
+             code.includes("setUser");
+    },
     hint: "Vérifie que tu as :\n- Implémenté login avec setUser\n- Implémenté logout qui remet user à null\n- Implémenté toggleRole qui change le rôle\n- Passé toutes les actions au Provider",
-    successMessage: "Excellent ! Ton contexte peut maintenant gérer des actions complexes."
+    successMessage: "Excellent ! Ton contexte peut maintenant gérer des actions complexes.",
+    solution: `interface User {
+  name: string;
+  role: "admin" | "user";
+}
+
+interface UserContextType {
+  user: User | null;
+  login: (name: string) => void;
+  logout: () => void;
+  toggleRole: () => void;
+}
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
+
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  const login = (name: string) => {
+    setUser({ name, role: "user" });
+  };
+
+  const logout = () => {
+    setUser(null);
+  };
+
+  const toggleRole = () => {
+    if (user) {
+      setUser({
+        ...user,
+        role: user.role === "admin" ? "user" : "admin"
+      });
+    }
+  };
+
+  return (
+    <UserContext.Provider value={{ user, login, logout, toggleRole }}>
+      {children}
+    </UserContext.Provider>
+  );
+}
+
+export function useUser() {
+  const context = useContext(UserContext);
+  if (!context) {
+    throw new Error("useUser must be used within a UserProvider");
+  }
+  return context;
+}`
   },
   {
     title: "🎓 Mini-Projet Final — CartContext",
@@ -261,13 +372,111 @@ function CartSummary() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("CartContext") &&
-      code.includes("addItem") &&
-      code.includes("removeItem") &&
-      code.includes("localStorage") &&
-      code.includes("getTotal"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("CartContext") &&
+             code.includes("addItem") &&
+             code.includes("removeItem") &&
+             code.includes("localStorage") &&
+             code.includes("getTotal");
+    },
     hint: "N'oublie pas :\n- D'implémenter addItem qui gère les quantités\n- D'implémenter removeItem qui retire un produit\n- De calculer le total avec reduce\n- De sauvegarder dans localStorage",
-    successMessage: "🎉 Félicitations ! Tu as créé un contexte complet et réutilisable.\nTu maîtrises maintenant le Context API en React !"
+    successMessage: "🎉 Félicitations ! Tu as créé un contexte complet et réutilisable.\nTu maîtrises maintenant le Context API en React !",
+    solution: `interface Product {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+interface CartContextType {
+  items: CartItem[];
+  addItem: (product: Product) => void;
+  removeItem: (productId: number) => void;
+  clearCart: () => void;
+  getTotal: () => number;
+  getItemsCount: () => number;
+}
+
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('cart');
+    if (saved) {
+      setItems(JSON.parse(saved));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(items));
+  }, [items]);
+
+  const addItem = (product: Product) => {
+    setItems(currentItems => {
+      const existingItem = currentItems.find(
+        item => item.product.id === product.id
+      );
+
+      if (existingItem) {
+        return currentItems.map(item =>
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+
+      return [...currentItems, { product, quantity: 1 }];
+    });
+  };
+
+  const removeItem = (productId: number) => {
+    setItems(items => items.filter(item => item.product.id !== productId));
+  };
+
+  const clearCart = () => {
+    setItems([]);
+  };
+
+  const getTotal = () => {
+    return items.reduce(
+      (total, item) => total + item.product.price * item.quantity,
+      0
+    );
+  };
+
+  const getItemsCount = () => {
+    return items.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  return (
+    <CartContext.Provider value={{
+      items,
+      addItem,
+      removeItem,
+      clearCart,
+      getTotal,
+      getItemsCount
+    }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+export function useCart() {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error("useCart must be used within a CartProvider");
+  }
+  return context;
+}`
   }
 ];
+
+export default steps;

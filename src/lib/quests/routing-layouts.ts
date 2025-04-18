@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const layoutsQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "🏙️ Introduction — Étape 1",
     content: `
@@ -39,13 +39,32 @@ export function MainLayout() {
 //   <Route path="/" element={<Home />} />
 //   <Route path="/about" element={<About />} />
 // </Route>`,
-    validate: (code: string) =>
-      code.includes("Outlet") &&
-      code.includes("MainLayout") &&
-      code.includes("Route") &&
-      code.includes("element"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("Outlet") &&
+             code.includes("MainLayout") &&
+             code.includes("Route") &&
+             code.includes("element");
+    },
     hint: "Vérifie que tu as :\n- Importé Outlet de react-router-dom\n- Placé <Outlet /> dans la balise main\n- Configuré les routes correctement",
-    successMessage: "Bravo ! Tu as créé ton premier layout réutilisable.\nToutes tes pages auront maintenant une structure commune !"
+    successMessage: "Bravo ! Tu as créé ton premier layout réutilisable.\nToutes tes pages auront maintenant une structure commune !",
+    solution: `import { Outlet } from "react-router-dom";
+
+export function MainLayout() {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-2xl font-bold">ReactQuest</h1>
+        </div>
+      </header>
+      
+      <main className="container mx-auto px-4 py-8">
+        <Outlet />
+      </main>
+    </div>
+  );
+}`
   },
   {
     title: "🔸 Étape 2 — Navigation imbriquée",
@@ -84,13 +103,45 @@ export function DashboardLayout() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("DashboardLayout") &&
-      code.includes("NavLink") &&
-      code.includes("profile") &&
-      code.includes("Outlet"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("DashboardLayout") &&
+             code.includes("NavLink") &&
+             code.includes("profile") &&
+             code.includes("Outlet");
+    },
     hint: "N'oublie pas :\n- D'ajouter les NavLink vers profile et settings\n- D'utiliser isActive pour le style actif\n- De placer <Outlet /> dans la div de droite",
-    successMessage: "Super ! Tu sais maintenant créer des layouts avec navigation imbriquée."
+    successMessage: "Super ! Tu sais maintenant créer des layouts avec navigation imbriquée.",
+    solution: `import { Outlet, NavLink } from "react-router-dom";
+
+export function DashboardLayout() {
+  return (
+    <div className="flex gap-8">
+      <nav className="w-48 space-y-2">
+        <NavLink
+          to="profile"
+          className={({ isActive }) =>
+            isActive ? "text-primary font-bold block" : "text-foreground block"
+          }
+        >
+          Profil
+        </NavLink>
+        <NavLink
+          to="settings"
+          className={({ isActive }) =>
+            isActive ? "text-primary font-bold block" : "text-foreground block"
+          }
+        >
+          Paramètres
+        </NavLink>
+      </nav>
+      
+      <div className="flex-1">
+        <Outlet />
+      </div>
+    </div>
+  );
+}`
   },
   {
     title: "🔹 Étape 3 — Typage des paramètres",
@@ -135,12 +186,31 @@ function UserPage() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("useParams") &&
-      code.includes("UserParams") &&
-      code.includes("id: string"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useParams") &&
+             code.includes("UserParams") &&
+             code.includes("id: string");
+    },
     hint: "Vérifie que tu as :\n- Créé l'interface UserParams\n- Utilisé useParams avec le type\n- Extrait et affiché l'id",
-    successMessage: "Excellent ! Tes routes sont maintenant typées et plus sûres."
+    successMessage: "Excellent ! Tes routes sont maintenant typées et plus sûres.",
+    solution: `import { useParams } from "react-router-dom";
+
+interface UserParams {
+  id: string;
+}
+
+function UserPage() {
+  const { id } = useParams<UserParams>();
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold">
+        Utilisateur #{id}
+      </h2>
+    </div>
+  );
+}`
   },
   {
     title: "🎓 Mini-Projet Final — AdminPanel",
@@ -221,13 +291,115 @@ function LogsPage() {
 //   <Route path="users/:id" element={<UserDetails />} />
 //   <Route path="logs" element={<LogsPage />} />
 // </Route>`,
-    validate: (code: string) =>
-      code.includes("AdminLayout") &&
-      code.includes("Outlet") &&
-      code.includes("useParams") &&
-      code.includes(":id") &&
-      code.includes("NavLink"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("AdminLayout") &&
+             code.includes("Outlet") &&
+             code.includes("useParams") &&
+             code.includes(":id") &&
+             code.includes("NavLink");
+    },
     hint: "N'oublie pas :\n- Les NavLink dans la barre latérale\n- L'Outlet dans le layout\n- Le typage des paramètres\n- Les routes imbriquées",
-    successMessage: "🎉 Félicitations ! Tu as créé une interface admin complète et bien structurée.\nTu maîtrises maintenant les layouts et les routes imbriquées !"
+    successMessage: "🎉 Félicitations ! Tu as créé une interface admin complète et bien structurée.\nTu maîtrises maintenant les layouts et les routes imbriquées !",
+    solution: `import { Outlet, NavLink, useParams } from "react-router-dom";
+
+// 1. Layout Admin
+function AdminLayout() {
+  return (
+    <div className="flex min-h-screen">
+      <nav className="w-64 border-r p-4 space-y-2">
+        <NavLink
+          to="users"
+          className={({ isActive }) =>
+            isActive ? "text-primary font-bold block" : "text-foreground block"
+          }
+        >
+          Utilisateurs
+        </NavLink>
+        <NavLink
+          to="logs"
+          className={({ isActive }) =>
+            isActive ? "text-primary font-bold block" : "text-foreground block"
+          }
+        >
+          Journaux
+        </NavLink>
+      </nav>
+      <main className="flex-1 p-8">
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+
+// 2. Pages
+function UsersPage() {
+  const users = [
+    { id: 1, name: "Alice" },
+    { id: 2, name: "Bob" },
+  ];
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Utilisateurs</h1>
+      <div className="space-y-2">
+        {users.map(user => (
+          <div key={user.id} className="p-4 border rounded">
+            <NavLink
+              to={\`\${user.id}\`}
+              className="hover:text-primary"
+            >
+              {user.name}
+            </NavLink>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface UserParams {
+  id: string;
+}
+
+function UserDetails() {
+  const { id } = useParams<UserParams>();
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">
+        Détails de l'utilisateur #{id}
+      </h1>
+      <NavLink
+        to=".."
+        className="text-primary hover:underline"
+      >
+        ← Retour à la liste
+      </NavLink>
+    </div>
+  );
+}
+
+function LogsPage() {
+  const logs = [
+    { id: 1, message: "Connexion utilisateur", date: new Date().toISOString() },
+    { id: 2, message: "Mise à jour profil", date: new Date().toISOString() },
+  ];
+
+  return (
+    <div>
+      <h1 className="text-2xl font-bold mb-4">Journaux</h1>
+      <div className="space-y-2">
+        {logs.map(log => (
+          <div key={log.id} className="p-4 border rounded">
+            <p className="font-medium">{log.message}</p>
+            <p className="text-sm text-muted-foreground">{log.date}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}`
   }
 ];
+
+export default steps;

@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const taskTrackerQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "📝 Mini-Projet Final — TaskTracker",
     content: `
@@ -67,7 +67,8 @@ export function TaskTracker() {
     </div>
   );
 }`,
-    validate: (code: string) => {
+    validate: (code: string | undefined) => {
+      if (!code) return false;
       return code.includes("useEffect") &&
              code.includes("localStorage") &&
              code.includes("useRef") &&
@@ -76,6 +77,72 @@ export function TaskTracker() {
              code.includes("map");
     },
     hint: "N'oublie pas :\n- De créer une ref pour l'input\n- D'utiliser localStorage.getItem au montage\n- D'utiliser localStorage.setItem quand tasks change\n- De donner le focus après l'ajout d'une tâche",
-    successMessage: "🎉 Félicitations ! Tu as créé une vraie application qui persiste les données !\nTu maîtrises maintenant les effets et les refs en React."
+    successMessage: "🎉 Félicitations ! Tu as créé une vraie application qui persiste les données !\nTu maîtrises maintenant les effets et les refs en React.",
+    solution: `import { useState, useEffect, useRef } from 'react';
+
+interface Task {
+  id: number;
+  label: string;
+}
+
+export function TaskTracker() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [input, setInput] = useState<string>('');
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('tasks');
+    if (saved) {
+      setTasks(JSON.parse(saved));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const addTask = () => {
+    if (!input.trim()) return;
+    setTasks([...tasks, { id: Date.now(), label: input }]);
+    setInput('');
+    inputRef.current?.focus();
+  };
+
+  return (
+    <div className="p-4 space-y-4 bg-white rounded-lg shadow-md">
+      <h2 className="text-xl font-bold">Suivi de tâches</h2>
+      <div className="flex gap-2">
+        <input
+          ref={inputRef}
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && addTask()}
+          className="border p-2 rounded flex-1"
+          placeholder="Nouvelle tâche"
+        />
+        <button
+          onClick={addTask}
+          className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
+        >
+          Ajouter
+        </button>
+      </div>
+      <ul className="list-disc pl-5">
+        {tasks.map(task => (
+          <li key={task.id} className="py-1">
+            {task.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}`
   }
 ];
+
+export default steps;

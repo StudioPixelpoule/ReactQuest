@@ -8,15 +8,23 @@ import { QuestEditor } from '@/components/QuestEditor';
 import { QuestContent } from '@/components/QuestContent';
 import { usePlayerStore } from '@/lib/store';
 import { quests } from '@/lib/quests';
-import { questContent } from '@/lib/quest-content';
+import { loadQuestContent } from '@/lib/quests';
 import { ChevronLeft, Trophy, Lock } from 'lucide-react';
 import { toast } from 'sonner';
+import { QuestStep } from '@/types/quest';
 
 export default function Quest() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [steps, setSteps] = useState<QuestStep[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showHint, setShowHint] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [code, setCode] = useState('');
+  const [step, setStep] = useState(0);
+  const [attempts, setAttempts] = useState(0);
+  const [showSolution, setShowSolution] = useState(false);
+  
   const { 
     addXP, 
     completeQuest, 
@@ -26,11 +34,42 @@ export default function Quest() {
     isQuestUnlocked
   } = usePlayerStore();
 
+  // Load quest content
+  useEffect(() => {
+    async function loadContent() {
+      if (!id) return;
+      try {
+        const content = await loadQuestContent(id);
+        setSteps(content);
+        const progress = getQuestProgress(id);
+        setStep(progress.currentStep);
+      } catch (error) {
+        console.error('Failed to load quest content:', error);
+        toast.error('Failed to load quest content');
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadContent();
+  }, [id, getQuestProgress]);
+
   const quest = quests.find(q => q.id === id);
-  if (!quest || !questContent[quest.id as keyof typeof questContent]) {
+
+  // Update code when step changes
+  useEffect(() => {
+    if (steps[step]) {
+      setCode(steps[step].initialCode);
+      setShowHint(false);
+      setIsSuccess(false);
+      setAttempts(0);
+      setShowSolution(false);
+    }
+  }, [step, steps]);
+
+  if (!quest || loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p>Quête non trouvée</p>
+        <p>Loading...</p>
       </div>
     );
   }
@@ -50,19 +89,8 @@ export default function Quest() {
     );
   }
 
-  const steps = questContent[quest.id as keyof typeof questContent];
-  const progress = getQuestProgress(quest.id);
-  const [step, setStep] = useState(progress.currentStep);
   const currentStep = steps[step];
   const progressPercent = ((step + 1) / steps.length) * 100;
-
-  const [code, setCode] = useState(currentStep.initialCode);
-
-  useEffect(() => {
-    setCode(currentStep.initialCode);
-    setShowHint(false);
-    setIsSuccess(false);
-  }, [step, currentStep.initialCode]);
 
   const handleVerify = () => {
     const isValid = currentStep.validate(code);
@@ -91,9 +119,21 @@ export default function Quest() {
         setTimeout(() => navigate('/hub'), 2000);
       }
     } else {
+      setAttempts(prev => {
+        const newAttempts = prev + 1;
+        if (newAttempts === 5) {
+          setShowSolution(true);
+          toast.info("La solution est maintenant disponible !");
+        }
+        return newAttempts;
+      });
       setShowHint(true);
       toast.error("Pas tout à fait ! Essaie encore.");
     }
+  };
+
+  const handleHintClose = () => {
+    setShowHint(false);
   };
 
   return (
@@ -151,6 +191,9 @@ export default function Quest() {
               isSuccess={isSuccess}
               hint={currentStep.hint}
               successMessage={currentStep.successMessage}
+              onHintClose={handleHintClose}
+              showSolution={showSolution}
+              solution={currentStep.solution}
             />
           </ResizablePanel>
         </ResizablePanelGroup>

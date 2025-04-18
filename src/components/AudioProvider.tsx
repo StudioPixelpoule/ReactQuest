@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import { usePlayerStore } from '@/lib/store';
 
 interface AudioContextType {
   isMuted: boolean;
@@ -24,6 +25,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [isMuted, setIsMuted] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const location = useLocation();
+  const { xp } = usePlayerStore();
 
   // Create separate audio instances for different sounds
   const [landingAudio] = useState(() => {
@@ -31,15 +33,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     const audio = new Audio('/assets/audio/audio.mp3');
     audio.loop = true;
     audio.volume = 0.3;
-    audio.addEventListener('play', () => {
-      console.log('[Audio] Landing audio started playing');
-    });
-    audio.addEventListener('pause', () => {
-      console.log('[Audio] Landing audio paused');
-    });
-    audio.addEventListener('error', (e) => {
-      console.error('[Audio] Landing audio error:', e);
-    });
+    return audio;
+  });
+
+  const [modalAudio] = useState(() => {
+    console.log('[Audio] Creating modal audio instance');
+    const audio = new Audio('/assets/audio/audio2.mp3');
+    audio.loop = true;
+    audio.volume = 0.3;
     return audio;
   });
 
@@ -48,15 +49,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     const audio = new Audio('/assets/audio/audio3.mp3');
     audio.loop = true;
     audio.volume = 0.3;
-    audio.addEventListener('play', () => {
-      console.log('[Audio] Background audio started playing');
-    });
-    audio.addEventListener('pause', () => {
-      console.log('[Audio] Background audio paused');
-    });
-    audio.addEventListener('error', (e) => {
-      console.error('[Audio] Background audio error:', e);
-    });
     return audio;
   });
 
@@ -64,155 +56,90 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     return () => {
       console.log('[Audio] Cleaning up audio instances');
-      console.log('[Audio] Current state:', { isStarted, isMuted, path: location.pathname });
       landingAudio.pause();
+      modalAudio.pause();
       backgroundAudio.pause();
     };
-  }, [landingAudio, backgroundAudio, isStarted, isMuted, location.pathname]);
+  }, [landingAudio, modalAudio, backgroundAudio]);
 
   // Handle mute state
   useEffect(() => {
-    console.log('[Audio] Mute state changed:', { 
-      isMuted, 
-      isStarted, 
-      path: location.pathname,
-      landingAudioPaused: landingAudio.paused,
-      backgroundAudioPaused: backgroundAudio.paused
-    });
-
     landingAudio.muted = isMuted;
+    modalAudio.muted = isMuted;
     backgroundAudio.muted = isMuted;
+  }, [isMuted, landingAudio, modalAudio, backgroundAudio]);
 
-    // If unmuting and audio is started, resume playback
-    if (!isMuted && isStarted) {
-      console.log('[Audio] Attempting to resume audio after unmute');
-      if (location.pathname === '/') {
-        console.log('[Audio] Resuming landing audio');
-        landingAudio.play().catch(error => {
-          console.error('[Audio] Failed to resume landing audio:', error);
-        });
-      } else {
-        console.log('[Audio] Resuming background audio');
-        backgroundAudio.play().catch(error => {
-          console.error('[Audio] Failed to resume background audio:', error);
-        });
-      }
-    }
-  }, [isMuted, landingAudio, backgroundAudio, location.pathname, isStarted]);
-
-  // Handle route changes
+  // Handle route changes and audio transitions
   useEffect(() => {
-    console.log('[Audio] Route changed:', {
-      path: location.pathname,
-      isStarted,
-      isMuted,
-      landingAudioState: {
-        paused: landingAudio.paused,
-        muted: landingAudio.muted,
-        currentTime: landingAudio.currentTime
-      },
-      backgroundAudioState: {
-        paused: backgroundAudio.paused,
-        muted: backgroundAudio.muted,
-        currentTime: backgroundAudio.currentTime
+    if (!isStarted || isMuted) return;
+
+    const stopAllAudio = () => {
+      landingAudio.pause();
+      modalAudio.pause();
+      backgroundAudio.pause();
+    };
+
+    const playAudio = async (audio: HTMLAudioElement) => {
+      try {
+        audio.currentTime = 0;
+        await audio.play();
+      } catch (error) {
+        console.error('[Audio] Playback error:', error);
       }
-    });
+    };
 
-    // Stop all audio when not started
-    if (!isStarted) {
-      console.log('[Audio] System not started, pausing all audio');
-      landingAudio.pause();
-      backgroundAudio.pause();
-      return;
-    }
+    // Add a small delay between stopping and starting audio
+    const switchAudio = async (audio: HTMLAudioElement) => {
+      stopAllAudio();
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await playAudio(audio);
+    };
 
-    // Don't play if muted
-    if (isMuted) {
-      console.log('[Audio] System muted, skipping audio change');
-      return;
-    }
-
-    // Handle audio based on route
     if (location.pathname === '/') {
-      console.log('[Audio] Switching to landing audio');
-      backgroundAudio.pause();
-      landingAudio.play().catch(error => {
-        console.error('[Audio] Failed to play landing audio:', error);
-      });
+      switchAudio(landingAudio);
+    } else if (xp === 0) {
+      switchAudio(modalAudio);
     } else {
-      console.log('[Audio] Switching to background audio');
-      landingAudio.pause();
-      backgroundAudio.play().catch(error => {
-        console.error('[Audio] Failed to play background audio:', error);
-      });
+      switchAudio(backgroundAudio);
     }
-  }, [location.pathname, isMuted, isStarted, landingAudio, backgroundAudio]);
+
+    return () => {
+      stopAllAudio();
+    };
+  }, [location.pathname, isMuted, isStarted, xp, landingAudio, modalAudio, backgroundAudio]);
 
   const startAudio = useCallback(() => {
-    console.log('[Audio] Starting audio system:', {
-      currentPath: location.pathname,
-      isMuted,
-      landingAudioPaused: landingAudio.paused,
-      backgroundAudioPaused: backgroundAudio.paused
-    });
-    
+    console.log('[Audio] Starting audio system');
     setIsStarted(true);
     
-    // Don't play if muted
-    if (isMuted) {
-      console.log('[Audio] System muted, not starting playback');
-      return;
-    }
-
-    // Play appropriate audio based on current route
-    if (location.pathname === '/') {
-      console.log('[Audio] Starting landing audio');
+    if (!isMuted && location.pathname === '/') {
       landingAudio.play().catch(error => {
         console.error('[Audio] Failed to start landing audio:', error);
       });
-    } else {
-      console.log('[Audio] Starting background audio');
-      backgroundAudio.play().catch(error => {
-        console.error('[Audio] Failed to start background audio:', error);
-      });
     }
-  }, [landingAudio, backgroundAudio, isMuted, location.pathname]);
+  }, [landingAudio, isMuted, location.pathname]);
 
   const toggleMute = useCallback(() => {
-    console.log('[Audio] Toggling mute state');
     setIsMuted(prev => !prev);
   }, []);
 
   const pauseBackgroundMusic = useCallback(() => {
-    console.log('[Audio] Pausing background music:', {
-      wasPlaying: !backgroundAudio.paused,
-      currentTime: backgroundAudio.currentTime
-    });
     backgroundAudio.pause();
-  }, [backgroundAudio]);
+    modalAudio.currentTime = 0;
+    modalAudio.play().catch(error => {
+      console.error('[Audio] Failed to play modal audio:', error);
+    });
+  }, [modalAudio, backgroundAudio]);
 
   const resumeBackgroundMusic = useCallback(() => {
-    console.log('[Audio] Attempting to resume background music:', {
-      isMuted,
-      isStarted,
-      path: location.pathname,
-      wasPaused: backgroundAudio.paused,
-      currentTime: backgroundAudio.currentTime
-    });
-    
-    if (isMuted || location.pathname === '/' || !isStarted) {
-      console.log('[Audio] Skipping resume due to conditions:', {
-        isMuted,
-        isLandingPage: location.pathname === '/',
-        isStarted
+    modalAudio.pause();
+    if (!isMuted && location.pathname !== '/' && isStarted) {
+      backgroundAudio.currentTime = 0;
+      backgroundAudio.play().catch(error => {
+        console.error('[Audio] Failed to resume background audio:', error);
       });
-      return;
     }
-    
-    backgroundAudio.play().catch(error => {
-      console.error('[Audio] Failed to resume background audio:', error);
-    });
-  }, [backgroundAudio, isMuted, location.pathname, isStarted]);
+  }, [modalAudio, backgroundAudio, isMuted, location.pathname, isStarted]);
 
   return (
     <AudioContext.Provider value={{ 

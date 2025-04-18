@@ -5,4 +5,5 @@ export interface QuestStep {
   validate: (code: string) => boolean;
   hint: string;
   successMessage: string;
+  solution: string;
 }

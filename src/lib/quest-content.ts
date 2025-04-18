@@ -25,7 +25,8 @@ Dans cette première étape, ton objectif est simple mais fondamental :
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes('function Welcome') &&
                code.includes('<div>') &&
                code.includes('Bonjour ReactQuest');
@@ -67,7 +68,8 @@ function Greeting( ) {
     </p>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("interface GreetingProps") &&
                code.includes("name: string") &&
                code.includes("function Greeting({ name }: GreetingProps)") &&
@@ -115,14 +117,15 @@ function Greeting({ name, title }: GreetingProps) {
     </p>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("title?: string") &&
                code.includes("{title ?") &&
                code.includes("Visiteur") &&
                code.includes("name");
       },
-      hint: "Vérifie bien :\n- Que tu as bien écrit title?: string dans l'interface\n- Que tu affiches une alternative quand title est absent (\"Visiteur\")\n- Que name reste toujours affiché, avec ou sans title",
-      successMessage: "🎉 Tu l'as fait !\nTon composant est maintenant intelligent, souple, et robuste. Il s'adapte à chaque utilisateur."
+      hint: "N'oublie pas :\n- De créer deux états (count et message)\n- De mettre à jour le message quand count change\n- D'utiliser % 2 === 0 pour vérifier si un nombre est pair",
+      successMessage: "Super ! Tu sais maintenant gérer plusieurs états qui interagissent entre eux."
     },
     {
       title: "🎓 Mini-Projet Final — TechCard",
@@ -171,7 +174,8 @@ function TechCard({ name, description, difficulty }: TechCardProps) {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("function TechCard") &&
                code.includes("name") &&
                code.includes("description") &&
@@ -219,7 +223,8 @@ function Counter() {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useState<number>(0)") &&
                code.includes("setCount") &&
                code.includes("count") &&
@@ -267,7 +272,8 @@ function MultiState() {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useState<number>") &&
                code.includes("useState<string>") &&
                code.includes("pair") &&
@@ -317,7 +323,8 @@ function NameInput() {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("value={name}") &&
                code.includes("onChange") &&
                code.includes("setName") &&
@@ -331,7 +338,7 @@ function NameInput() {
       content: `
 ### Le Widget de Tableau de Bord
 
-Pour ce projet final, tu vas créer un widget complet qui combine tout ce que tu as appris :
+Pour ce projet final, tu vas créer une mini-application qui combine tout ce que tu as appris :
 - Un champ pour le prénom
 - Un compteur de clics
 - Un bouton qui affiche une alerte personnalisée
@@ -366,7 +373,8 @@ function DashboardWidget() {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useState<string>") &&
                code.includes("useState<number>") &&
                code.includes("alert") &&
@@ -375,7 +383,7 @@ function DashboardWidget() {
                code.includes("Bonjour") &&
                code.includes("cliqué");
       },
-      hint: "Vérifie que tu as :\n- Créé les deux états (name et count)\n- Un input contrôlé pour le nom\n- Un bouton pour incrémenter count\n- Un bouton qui déclenche l'alert avec le message formaté",
+      hint: "N'oublie pas :\n- Créé les deux états (name et count)\n- Un input contrôlé pour le nom\n- Un bouton pour incrémenter count\n- Un bouton qui déclenche l'alert avec le message formaté",
       successMessage: "🎉 Félicitations ! Tu as créé un widget interactif complet !\nTu maîtrises maintenant la gestion d'état en React."
     }
   ],
@@ -449,7 +457,8 @@ function Dashboard() {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("CounterWidget") &&
                code.includes("ClockWidget") &&
                code.includes("WeatherWidget") &&
@@ -487,7 +496,8 @@ function HelloEffect() {
 
   return <p>Composant monté.</p>;
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useEffect") &&
                code.includes("console.log") &&
                code.includes("[]");
@@ -531,7 +541,8 @@ function CountEffect() {
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useEffect") &&
                code.includes("count") &&
                code.includes("[count]") &&
@@ -579,7 +590,8 @@ function TimerEffect() {
 
   return <p>Le temps passe...</p>;
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("clearInterval") &&
                code.includes("return () =>") &&
                code.includes("setInterval");
@@ -614,7 +626,8 @@ function AutoCounter() {
 
   return <p>Le compteur est {/* ... */}</p>;
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useEffect") &&
                code.includes("setInterval") &&
                code.includes("clearInterval") &&
@@ -651,7 +664,8 @@ function FocusInput() {
 
   return <input ref={inputRef} type="text" />;
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useRef") &&
                code.includes("HTMLInputElement") &&
                code.includes("current") &&
@@ -694,7 +708,8 @@ C'est très utile pour :
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("getBoundingClientRect") &&
                code.includes("console.log") &&
                code.includes("current");
@@ -736,12 +751,14 @@ Tu vas créer une boîte qui :
       <div
         ref={boxRef}
         className="w-32 h-32 bg-blue-500 transition-all"
+      
       ></div>
       <button onClick={handleClick}>Animer</button>
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("classList") &&
                code.includes("add") &&
                code.includes("current") &&
@@ -755,9 +772,7 @@ Tu vas créer une boîte qui :
       content: `
 ### Le Formulaire Magique
 
-Pour ce projet final, tu vas créer un formulaire inter
-
-actif qui utilise les refs pour :
+Pour ce projet final, tu vas créer un formulaire interactif qui utilise les refs pour :
 - Valider les champs
 - Donner le focus automatiquement
 - Afficher des messages d'erreur
@@ -798,7 +813,8 @@ Le formulaire doit :
     </div>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("useRef") &&
                code.includes("focus") &&
                code.includes("onClick") &&
@@ -846,7 +862,8 @@ function ProfileCard() {
 function ProfileContainer() {
   // À compléter
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("ProfileCard") &&
                code.includes("name") &&
                code.includes("job") &&
@@ -893,7 +910,8 @@ function App() {
     </Card>
   );
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("children: React.ReactNode") &&
                code.includes("function Card") &&
                code.includes("className") &&
@@ -933,7 +951,8 @@ function InputField() {
 function FormContainer() {
   // À compléter
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("onChange") &&
                code.includes("setValue") &&
                code.includes("value") &&
@@ -982,7 +1001,8 @@ interface ProfileCardProps {
 function ProfileDashboard() {
   // Gère l'état et la logique ici
 }`,
-      validate: (code: string) => {
+      validate: (code: string | undefined) => {
+        if (!code) return false;
         return code.includes("Card") &&
                code.includes("ProfileCard") &&
                code.includes("ProfileDashboard") &&

@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const stateFinalQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "💥 Mini-Projet Final — Refactorisation Redux",
     content: `
@@ -108,14 +108,19 @@ export function TaskApp() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("configureStore") &&
-      code.includes("createSlice") &&
-      code.includes("useSelector") &&
-      code.includes("useDispatch") &&
-      code.includes("addTask") &&
-      code.includes("removeTask"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("configureStore") &&
+             code.includes("createSlice") &&
+             code.includes("useSelector") &&
+             code.includes("useDispatch") &&
+             code.includes("addTask") &&
+             code.includes("removeTask");
+    },
     hint: "Vérifie que tu as :\n- Créé le store avec configureStore\n- Défini le slice avec createSlice\n- Utilisé useSelector et useDispatch\n- Implémenté addTask et removeTask\n- Connecté le composant au store",
-    successMessage: "🎉 Félicitations ! Tu as créé une architecture Redux complète et professionnelle.\nTon application est maintenant prête à évoluer !"
+    successMessage: "🎉 Félicitations ! Tu as créé une architecture Redux complète et professionnelle.\nTon application est maintenant prête à évoluer !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

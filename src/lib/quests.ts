@@ -349,3 +349,17 @@ export const quests: Quest[] = [
     district: 'final'
   }
 ];
+
+export async function loadQuestContent(questId: string) {
+  try {
+    const questModule = await import(`./quests/${questId}.ts`);
+    return questModule.default;
+  } catch (error) {
+    console.error(`Failed to load quest content for ${questId}:`, error);
+    throw new Error(`Quest content not found for ${questId}`);
+  }
+}
+
+export function getQuestContent(questId: string) {
+  return import(`./quests/${questId}.ts`).then(module => module.default);
+}

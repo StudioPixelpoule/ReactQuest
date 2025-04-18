@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const routingQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "🚉 Introduction — Étape 1",
     content: `
@@ -34,13 +34,29 @@ function App() {
     </BrowserRouter>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("BrowserRouter") &&
-      code.includes("Route") &&
-      code.includes('path="/"') &&
-      code.includes('path="/about"'),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("BrowserRouter") &&
+             code.includes("Route") &&
+             code.includes('path="/"') &&
+             code.includes('path="/about"');
+    },
     hint: "N'oublie pas :\n- D'ajouter une Route pour la page d'accueil (/)\n- D'ajouter une Route pour la page About (/about)\n- De spécifier l'element pour chaque Route",
-    successMessage: "Bravo ! Tu as configuré tes premières routes.\nTon application a maintenant plusieurs pages !"
+    successMessage: "Bravo ! Tu as configuré tes premières routes.\nTon application a maintenant plusieurs pages !",
+    solution: `import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import About from "./pages/About";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}`
   },
   {
     title: "🔸 Étape 2 — Navigation",
@@ -76,13 +92,39 @@ function Navbar() {
     </nav>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("NavLink") &&
-      code.includes('to="/"') &&
-      code.includes('to="/about"') &&
-      code.includes("isActive"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("NavLink") &&
+             code.includes('to="/"') &&
+             code.includes('to="/about"') &&
+             code.includes("isActive");
+    },
     hint: "Vérifie que tu as :\n- Utilisé NavLink (pas Link)\n- Un lien vers / et /about\n- Une classe conditionnelle avec isActive",
-    successMessage: "Super ! Ta navigation est maintenant interactive et réactive."
+    successMessage: "Super ! Ta navigation est maintenant interactive et réactive.",
+    solution: `import { NavLink } from "react-router-dom";
+
+function Navbar() {
+  return (
+    <nav className="flex gap-4 p-4 bg-card">
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          isActive ? "text-primary font-bold" : "text-foreground"
+        }
+      >
+        Accueil
+      </NavLink>
+      <NavLink
+        to="/about"
+        className={({ isActive }) =>
+          isActive ? "text-primary font-bold" : "text-foreground"
+        }
+      >
+        À propos
+      </NavLink>
+    </nav>
+  );
+}`
   },
   {
     title: "🔹 Étape 3 — Routes dynamiques",
@@ -119,12 +161,27 @@ function Profile() {
 
 // Route à ajouter :
 // <Route path="/profile/:name" element={<Profile />} />`,
-    validate: (code: string) =>
-      code.includes("useParams") &&
-      code.includes(":name") &&
-      code.includes("Profil de"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useParams") &&
+             code.includes(":name") &&
+             code.includes("Profil de");
+    },
     hint: "N'oublie pas :\n- D'utiliser useParams avec le bon type\n- D'extraire le paramètre name\n- D'afficher le nom dans le titre",
-    successMessage: "Excellent ! Tu sais maintenant créer des routes dynamiques."
+    successMessage: "Excellent ! Tu sais maintenant créer des routes dynamiques.",
+    solution: `import { useParams } from "react-router-dom";
+
+function Profile() {
+  const { name } = useParams<{ name: string }>();
+
+  return (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold">
+        Profil de {name}
+      </h2>
+    </div>
+  );
+}`
   },
   {
     title: "🎓 Mini-Projet Final — Mini-Portail",
@@ -209,14 +266,118 @@ function App() {
     </BrowserRouter>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("Route") &&
-      code.includes("PrivateRoute") &&
-      code.includes(":name") &&
-      code.includes("useParams") &&
-      code.includes("NavLink") &&
-      code.includes("*"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("Route") &&
+             code.includes("PrivateRoute") &&
+             code.includes(":name") &&
+             code.includes("useParams") &&
+             code.includes("NavLink") &&
+             code.includes("*");
+    },
     hint: "Vérifie que tu as :\n- Toutes les routes (/, /about, /profile/:name, /admin)\n- Une route * pour le 404\n- La route admin protégée avec PrivateRoute\n- Tous les liens dans la Navbar",
-    successMessage: "🎉 Félicitations ! Tu as créé une application complète avec routage.\nTu maîtrises maintenant la navigation en React !"
+    successMessage: "🎉 Félicitations ! Tu as créé une application complète avec routage.\nTu maîtrises maintenant la navigation en React !",
+    solution: `import { BrowserRouter, Routes, Route, NavLink, useNavigate, useParams } from "react-router-dom";
+
+// 1. Composant de route protégée
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = true; // À remplacer par une vraie auth
+  const navigate = useNavigate();
+
+  if (!isAuthenticated) {
+    return <p>Accès refusé</p>;
+  }
+
+  return <>{children}</>;
+}
+
+// 2. Barre de navigation
+function Navbar() {
+  return (
+    <nav className="flex gap-4 p-4 bg-card">
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          isActive ? "text-primary font-bold" : "text-foreground"
+        }
+      >
+        Accueil
+      </NavLink>
+      <NavLink
+        to="/about"
+        className={({ isActive }) =>
+          isActive ? "text-primary font-bold" : "text-foreground"
+        }
+      >
+        À propos
+      </NavLink>
+      <NavLink
+        to="/profile/guest"
+        className={({ isActive }) =>
+          isActive ? "text-primary font-bold" : "text-foreground"
+        }
+      >
+        Profil
+      </NavLink>
+      <NavLink
+        to="/admin"
+        className={({ isActive }) =>
+          isActive ? "text-primary font-bold" : "text-foreground"
+        }
+      >
+        Admin
+      </NavLink>
+    </nav>
+  );
+}
+
+// 3. Pages
+function Home() {
+  return <h1>Accueil</h1>;
+}
+
+function About() {
+  return <h1>À propos</h1>;
+}
+
+function Profile() {
+  const { name } = useParams<{ name: string }>();
+  return <h1>Profil de {name}</h1>;
+}
+
+function Admin() {
+  return <h1>Admin</h1>;
+}
+
+function NotFound() {
+  return <h1>Page non trouvée</h1>;
+}
+
+// 4. App avec toutes les routes
+function App() {
+  return (
+    <BrowserRouter>
+      <Navbar />
+      <main className="p-4">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/profile/:name" element={<Profile />} />
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <Admin />
+              </PrivateRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </main>
+    </BrowserRouter>
+  );
+}`
   }
 ];
+
+export default steps;

@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const finalQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "🏛️ TechTopia Hub — Construction Finale",
     content: `
@@ -375,15 +375,20 @@ export function ProjectForm({ onSubmit, initialData }: ProjectFormProps) {
     </form>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("createSlice") &&
-      code.includes("useQuery") &&
-      code.includes("react-hook-form") &&
-      code.includes("zod") &&
-      code.includes("Route") &&
-      code.includes("Suspense") &&
-      code.includes("test"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("createSlice") &&
+             code.includes("useQuery") &&
+             code.includes("react-hook-form") &&
+             code.includes("zod") &&
+             code.includes("Route") &&
+             code.includes("Suspense") &&
+             code.includes("test");
+    },
     hint: "Vérifie que tu as :\n- Configuré Redux Toolkit\n- Mis en place React Query\n- Créé les formulaires avec validation\n- Géré les routes protégées\n- Implémenté le lazy loading",
-    successMessage: "🎉 Félicitations ! Tu as créé une application React complète et professionnelle.\nTu es maintenant un expert React !"
+    successMessage: "🎉 Félicitations ! Tu as créé une application React complète et professionnelle.\nTu es maintenant un expert React !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

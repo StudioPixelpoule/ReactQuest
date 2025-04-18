@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const dataFinalQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "💥 Mini-Projet Final — Blog Connecté",
     content: `
@@ -166,28 +166,19 @@ function PostDetail() {
       </div>
     </div>
   );
-}
-
-// Configuration des routes
-function App() {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<PostList />} />
-          <Route path="/posts/:id" element={<PostDetail />} />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
 }`,
-    validate: (code: string) =>
-      code.includes("useQuery") &&
-      code.includes("queryKey") &&
-      code.includes("enabled") &&
-      code.includes("isFetching") &&
-      code.includes("pagination"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useQuery") &&
+             code.includes("queryKey") &&
+             code.includes("enabled") &&
+             code.includes("isFetching") &&
+             code.includes("pagination");
+    },
     hint: "Vérifie que tu as :\n- Implémenté la pagination\n- Géré le cache des articles et commentaires\n- Utilisé des queryKey structurées\n- Ajouté la navigation entre les pages",
-    successMessage: "🎉 Félicitations ! Tu as créé un blog complet et optimisé.\nTu maîtrises maintenant la gestion des données en React !"
+    successMessage: "🎉 Félicitations ! Tu as créé un blog complet et optimisé.\nTu maîtrises maintenant la gestion des données en React !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

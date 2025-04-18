@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const formsFinalQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "💥 Mini-Projet Final — Formulaire de Contact Pro",
     content: `
@@ -179,13 +179,18 @@ function ContactForm() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("contactSchema") &&
-      code.includes("zodResolver") &&
-      code.includes("toast.success") &&
-      code.includes("terms") &&
-      code.includes("Select"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("contactSchema") &&
+             code.includes("zodResolver") &&
+             code.includes("toast.success") &&
+             code.includes("terms") &&
+             code.includes("Select");
+    },
     hint: "Vérifie que tu as :\n- Créé le schéma Zod complet\n- Utilisé les composants shadcn/ui\n- Géré tous les types de champs\n- Ajouté les retours utilisateur",
-    successMessage: "🎉 Félicitations ! Tu as créé un formulaire de contact professionnel et complet.\nTu maîtrises maintenant les formulaires en React !"
+    successMessage: "🎉 Félicitations ! Tu as créé un formulaire de contact professionnel et complet.\nTu maîtrises maintenant les formulaires en React !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const routingFinalQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "🌐 Mini-Projet Final — Navigation Complète",
     content: `
@@ -180,14 +180,19 @@ function App() {
     </BrowserRouter>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("MainLayout") &&
-      code.includes("DashboardLayout") &&
-      code.includes("PrivateRoute") &&
-      code.includes("useParams") &&
-      code.includes("NavLink") &&
-      code.includes(":name"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("MainLayout") &&
+             code.includes("DashboardLayout") &&
+             code.includes("PrivateRoute") &&
+             code.includes("useParams") &&
+             code.includes("NavLink") &&
+             code.includes(":name");
+    },
     hint: "Vérifie que tu as :\n- Les deux layouts (Main et Dashboard)\n- La route protégée pour le dashboard\n- Les NavLink avec styles actifs\n- Le typage des paramètres d'URL\n- La gestion des 404",
-    successMessage: "🎉 Félicitations ! Tu as créé une application React complète avec navigation.\nTu maîtrises maintenant les routes, les layouts et la navigation !"
+    successMessage: "🎉 Félicitations ! Tu as créé une application React complète avec navigation.\nTu maîtrises maintenant les routes, les layouts et la navigation !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

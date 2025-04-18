@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const formsValidationQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "🔹 Étape 1 — Créer un formulaire avec React Hook Form",
     content: `
@@ -67,50 +67,30 @@ function EmailForm() {
     </form>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("useForm") &&
-      code.includes("register") &&
-      code.includes("errors.email") &&
-      code.includes("pattern"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useForm") &&
+             code.includes("register") &&
+             code.includes("errors.email") &&
+             code.includes("pattern");
+    },
     hint: "Vérifie que tu as :\n- Utilisé useForm avec le bon type\n- Configuré register avec les règles\n- Affiché les erreurs\n- Implémenté onSubmit",
-    successMessage: "Bravo ! Tu sais maintenant utiliser React Hook Form.\nC'est beaucoup plus simple que useState, non ?"
-  },
-  {
-    title: "🔸 Étape 2 — Gérer plusieurs champs",
-    content: `
-### Formulaire multi-champs avec React Hook Form
+    successMessage: "Bravo ! Tu sais maintenant utiliser React Hook Form.\nC'est beaucoup plus simple que useState, non ?",
+    solution: `import { useForm } from "react-hook-form";
 
-React Hook Form excelle avec les formulaires complexes :
-- Plusieurs champs
-- Validations interdépendantes
-- États de formulaire avancés
-
-Tu vas créer un formulaire de connexion complet.
-
-> 💡 Conseil de React-Bot :  
-> \`formState\` donne accès à plein d'infos utiles :
-> - \`isSubmitting\`
-> - \`isDirty\`
-> - \`isValid\`
-    `,
-    initialCode: `import { useForm } from "react-hook-form";
-
-interface LoginData {
+interface FormData {
   email: string;
-  password: string;
 }
 
-function LoginForm() {
+function EmailForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginData>();
+    formState: { errors },
+  } = useForm<FormData>();
 
-  const onSubmit = async (data: LoginData) => {
-    // Simuler un appel API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Login:', data);
+  const onSubmit = (data: FormData) => {
+    console.log('Email soumis :', data.email);
   };
 
   return (
@@ -129,6 +109,7 @@ function LoginForm() {
             },
           })}
           className="w-full p-2 border rounded"
+          placeholder="ton@email.com"
         />
         {errors.email && (
           <p className="mt-1 text-sm text-destructive">
@@ -136,50 +117,18 @@ function LoginForm() {
           </p>
         )}
       </div>
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium mb-1">
-          Mot de passe
-        </label>
-        <input
-          id="password"
-          type="password"
-          {...register("password", {
-            required: "Le mot de passe est requis",
-            minLength: {
-              value: 6,
-              message: "Le mot de passe doit faire au moins 6 caractères",
-            },
-          })}
-          className="w-full p-2 border rounded"
-        />
-        {errors.password && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
-
       <button
         type="submit"
-        disabled={isSubmitting}
-        className="w-full px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
+        className="px-4 py-2 bg-primary text-primary-foreground rounded"
       >
-        {isSubmitting ? "Connexion..." : "Se connecter"}
+        Envoyer
       </button>
     </form>
   );
-}`,
-    validate: (code: string) =>
-      code.includes("minLength") &&
-      code.includes("LoginData") &&
-      code.includes("formState") &&
-      code.includes("isSubmitting"),
-    hint: "N'oublie pas :\n- De typer le formulaire avec LoginData\n- D'ajouter les règles de validation\n- De gérer isSubmitting\n- D'afficher les erreurs",
-    successMessage: "Super ! Tu maîtrises maintenant les formulaires complexes avec React Hook Form."
+}`
   },
   {
-    title: "🔹 Étape 3 — Validation avec Zod",
+    title: "🔸 Étape 2 — Validation avec Zod",
     content: `
 ### Validation déclarative avec Zod
 
@@ -271,13 +220,88 @@ function ZodForm() {
     </form>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("z.object") &&
-      code.includes("zodResolver") &&
-      code.includes("z.infer") &&
-      code.includes("valueAsNumber"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("z.object") &&
+             code.includes("zodResolver") &&
+             code.includes("z.infer") &&
+             code.includes("valueAsNumber");
+    },
     hint: "Vérifie que tu as :\n- Créé le schéma Zod\n- Utilisé zodResolver\n- Typé le formulaire avec z.infer\n- Configuré register pour les nombres",
-    successMessage: "Excellent ! Tu sais maintenant utiliser Zod pour une validation déclarative."
+    successMessage: "Excellent ! Tu sais maintenant utiliser Zod pour une validation déclarative.",
+    solution: `import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  email: z.string()
+    .min(1, "L'email est requis")
+    .email("Format d'email invalide"),
+  age: z.number()
+    .min(18, "Vous devez avoir au moins 18 ans")
+    .max(120, "Âge invalide"),
+});
+
+type Schema = z.infer<typeof schema>;
+
+function ZodForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Schema>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = (data: Schema) => {
+    console.log('Données valides :', data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium mb-1">
+          Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          {...register("email")}
+          className="w-full p-2 border rounded"
+        />
+        {errors.email && (
+          <p className="mt-1 text-sm text-destructive">
+            {errors.email.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="age" className="block text-sm font-medium mb-1">
+          Âge
+        </label>
+        <input
+          id="age"
+          type="number"
+          {...register("age", { valueAsNumber: true })}
+          className="w-full p-2 border rounded"
+        />
+        {errors.age && (
+          <p className="mt-1 text-sm text-destructive">
+            {errors.age.message}
+          </p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="px-4 py-2 bg-primary text-primary-foreground rounded"
+      >
+        Valider
+      </button>
+    </form>
+  );
+}`
   },
   {
     title: "🎓 Mini-Projet Final — Formulaire de contact",
@@ -428,12 +452,17 @@ function ContactForm() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("z.object") &&
-      code.includes("zodResolver") &&
-      code.includes("reset") &&
-      code.includes("isSubmitSuccessful"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("z.object") &&
+             code.includes("zodResolver") &&
+             code.includes("reset") &&
+             code.includes("isSubmitSuccessful");
+    },
     hint: "Vérifie que tu as :\n- Créé le schéma Zod complet\n- Utilisé reset après soumission\n- Géré tous les états du formulaire\n- Affiché le message de succès",
-    successMessage: "🎉 Félicitations ! Tu as créé un formulaire de contact professionnel.\nTu maîtrises maintenant React Hook Form et Zod !"
+    successMessage: "🎉 Félicitations ! Tu sais maintenant créer des formulaires complexes avec React Hook Form et Zod.\nTes formulaires sont maintenant robustes et bien typés !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

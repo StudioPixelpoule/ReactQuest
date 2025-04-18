@@ -72,40 +72,19 @@ interface IntroModalProps {
 
 export function IntroModal({ open, onOpenChange }: IntroModalProps) {
   const [currentPage, setCurrentPage] = useState(0);
-  const [audio] = useState(() => {
-    console.log('[Modal] Creating modal audio instance');
-    const audio = new Audio('/assets/audio/audio2.mp3');
-    audio.loop = true;
-    audio.volume = 0.3;
-    audio.addEventListener('play', () => {
-      console.log('[Modal] Modal audio started playing');
-    });
-    audio.addEventListener('pause', () => {
-      console.log('[Modal] Modal audio paused');
-    });
-    audio.addEventListener('error', (e) => {
-      console.error('[Modal] Modal audio error:', e);
-    });
-    return audio;
-  });
   const { pauseBackgroundMusic, resumeBackgroundMusic } = useAudio();
 
   useEffect(() => {
     if (open) {
-      console.log('[Modal] Opening modal, pausing background and starting modal audio');
       pauseBackgroundMusic();
-      audio.play().catch(error => {
-        console.error('[Modal] Failed to play modal audio:', error);
-      });
     }
+
     return () => {
-      console.log('[Modal] Closing modal, stopping modal audio');
-      audio.pause();
       if (open) {
         resumeBackgroundMusic();
       }
     };
-  }, [open, audio, pauseBackgroundMusic, resumeBackgroundMusic]);
+  }, [open, pauseBackgroundMusic, resumeBackgroundMusic]);
 
   const nextPage = () => {
     if (currentPage < pages.length - 1) {
@@ -128,67 +107,59 @@ export function IntroModal({ open, onOpenChange }: IntroModalProps) {
         aria-describedby="modal-description"
       >
         <DialogTitle className="sr-only">Introduction à ReactQuest</DialogTitle>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPage}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="space-y-8 py-8"
-            id="modal-description"
-          >
-            <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50"
-            >
-              {pages[currentPage].title}
-            </motion.h2>
-
+        <div className="space-y-8 py-8" id="modal-description">
+          <AnimatePresence mode="wait">
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="prose dark:prose-invert max-w-none whitespace-pre-line"
+              key={currentPage}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-8"
             >
-              {pages[currentPage].content}
-            </motion.div>
+              <h2 className="text-3xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
+                {pages[currentPage].title}
+              </h2>
 
-            <div className="flex justify-between items-center pt-4">
-              <Button
-                variant="ghost"
-                onClick={prevPage}
-                disabled={currentPage === 0}
-                className="gap-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Précédent
-              </Button>
-
-              <div className="flex gap-1">
-                {pages.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`h-1.5 w-1.5 rounded-full transition-colors ${
-                      index === currentPage ? 'bg-primary' : 'bg-primary/20'
-                    }`}
-                  />
-                ))}
+              <div className="prose dark:prose-invert max-w-none whitespace-pre-line">
+                {pages[currentPage].content}
               </div>
 
-              <Button onClick={nextPage} className="gap-2">
-                {currentPage === pages.length - 1 ? (
-                  "Commencer"
-                ) : (
-                  <>
-                    Suivant
-                    <ChevronRight className="h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+              <div className="flex justify-between items-center pt-4">
+                <Button
+                  variant="ghost"
+                  onClick={prevPage}
+                  disabled={currentPage === 0}
+                  className="gap-2"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Précédent
+                </Button>
+
+                <div className="flex gap-1">
+                  {pages.map((_, index) => (
+                    <div
+                      key={index}
+                      className={`h-1.5 w-1.5 rounded-full transition-colors ${
+                        index === currentPage ? 'bg-primary' : 'bg-primary/20'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <Button onClick={nextPage} className="gap-2">
+                  {currentPage === pages.length - 1 ? (
+                    "Commencer"
+                  ) : (
+                    <>
+                      Suivant
+                      <ChevronRight className="h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </DialogContent>
     </Dialog>
   );

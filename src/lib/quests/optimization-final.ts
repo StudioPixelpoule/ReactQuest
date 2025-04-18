@@ -1,6 +1,6 @@
 import { QuestStep } from '@/types/quest';
 
-export const optimizationFinalQuest: QuestStep[] = [
+const steps: QuestStep[] = [
   {
     title: "💥 Mini-Projet Final — Optimisation Complète",
     content: `
@@ -218,14 +218,19 @@ function Dashboard() {
     </div>
   );
 }`,
-    validate: (code: string) =>
-      code.includes("useMemo") &&
-      code.includes("useCallback") &&
-      code.includes("React.memo") &&
-      code.includes("lazy") &&
-      code.includes("Suspense") &&
-      code.includes("TypeScript"),
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useMemo") &&
+             code.includes("useCallback") &&
+             code.includes("React.memo") &&
+             code.includes("lazy") &&
+             code.includes("Suspense") &&
+             code.includes("TypeScript");
+    },
     hint: "Vérifie que tu as :\n- Mémorisé les calculs lourds\n- Stabilisé les fonctions de callback\n- Utilisé React.memo pour les composants purs\n- Implémenté le lazy loading\n- Typé correctement les props",
-    successMessage: "🎉 Félicitations ! Tu as créé une application React optimisée et performante.\nTu maîtrises maintenant toutes les techniques d'optimisation !"
+    successMessage: "🎉 Félicitations ! Tu as créé une application React optimisée et performante.\nTu maîtrises maintenant toutes les techniques d'optimisation !",
+    solution: `// Solution complète dans le code initial`
   }
 ];
+
+export default steps;

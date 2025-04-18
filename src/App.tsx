@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from '@/components/ui/sonner';
 import { AudioProvider } from '@/components/AudioProvider';
+import { AssistantWidget } from '@/components/AssistantWidget';
 import LandingPage from '@/pages/LandingPage';
 import Hub from '@/pages/Hub';
 import Quest from '@/pages/Quest';
@@ -24,6 +25,10 @@ function App() {
               <Route path="/settings" element={<Settings />} />
             </Routes>
           </AnimatePresence>
+          <Routes>
+            <Route path="/" element={null} />
+            <Route path="*" element={<AssistantWidget />} />
+          </Routes>
           <Toaster />
         </AudioProvider>
       </Router>
