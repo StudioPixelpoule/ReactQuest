@@ -31,7 +31,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // Create separate audio instances for different sounds
   const [landingAudio] = useState(() => {
     console.log('[Audio] Creating landing audio instance');
-    const audio = new Audio('/assets/audio/audio.mp3');
+    const audio = new Audio('/public/assets/audio/audio.mp3');
     audio.loop = true;
     audio.volume = 0.3;
     
@@ -58,7 +58,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     });
     
     audio.addEventListener('error', (e) => {
-      console.error('[Audio] Landing audio error:', e);
+      const mediaError = (e.target as HTMLAudioElement).error;
+      console.error('[Audio] Landing audio error:', {
+        code: mediaError?.code,
+        message: mediaError?.message,
+        details: e
+      });
     });
     
     return audio;
@@ -66,7 +71,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const [modalAudio] = useState(() => {
     console.log('[Audio] Creating modal audio instance');
-    const audio = new Audio('/assets/audio/audio2.mp3');
+    const audio = new Audio('/public/assets/audio/audio2.mp3');
     audio.loop = true;
     audio.volume = 0.3;
     
@@ -93,7 +98,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     });
     
     audio.addEventListener('error', (e) => {
-      console.error('[Audio] Modal audio error:', e);
+      const mediaError = (e.target as HTMLAudioElement).error;
+      console.error('[Audio] Modal audio error:', {
+        code: mediaError?.code,
+        message: mediaError?.message,
+        details: e
+      });
     });
     
     return audio;
@@ -101,7 +111,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const [backgroundAudio] = useState(() => {
     console.log('[Audio] Creating background audio instance');
-    const audio = new Audio('/assets/audio/audio3.mp3');
+    const audio = new Audio('/public/assets/audio/audio3.mp3');
     audio.loop = true;
     audio.volume = 0.3;
     
@@ -128,7 +138,18 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     });
     
     audio.addEventListener('error', (e) => {
-      console.error('[Audio] Background audio error:', e);
+      const mediaError = (e.target as HTMLAudioElement).error;
+      console.error('[Audio] Background audio error:', {
+        code: mediaError?.code,
+        message: mediaError?.message,
+        details: e
+      });
+
+      // Attempt to reload the audio if there's a network error
+      if (mediaError?.code === MediaError.MEDIA_ERR_NETWORK) {
+        console.log('[Audio] Network error detected, attempting to reload audio');
+        audio.load();
+      }
     });
     
     return audio;
@@ -148,10 +169,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     try {
       await audio.play();
     } catch (error) {
-      if (error instanceof Error && error.name === 'AbortError') {
-        console.log('[Audio] Play request was aborted, this is expected during quick transitions');
-      } else {
-        console.error('[Audio] Failed to play audio:', error);
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          console.log('[Audio] Play request was aborted, this is expected during quick transitions');
+        } else if (error.name === 'NotAllowedError') {
+          console.log('[Audio] Play request was not allowed, waiting for user interaction');
+        } else {
+          console.error('[Audio] Failed to play audio:', error);
+        }
       }
     }
   }, []);

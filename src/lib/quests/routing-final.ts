@@ -121,11 +121,11 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 // 4. Pages
 function Home() {
-  return <h1 className="text-2xl font-bold">Accueil</h1>;
+  return <h1>Accueil</h1>;
 }
 
 function About() {
-  return <h1 className="text-2xl font-bold">À propos</h1>;
+  return <h1>À propos</h1>;
 }
 
 interface ProfileParams {
@@ -134,15 +134,15 @@ interface ProfileParams {
 
 function Profile() {
   const { name } = useParams<ProfileParams>();
-  return <h1 className="text-2xl font-bold">Profil de {name}</h1>;
+  return <h1>Profil de {name}</h1>;
 }
 
 function Users() {
-  return <h1 className="text-2xl font-bold">Utilisateurs</h1>;
+  return <h1>Utilisateurs</h1>;
 }
 
 function Settings() {
-  return <h1 className="text-2xl font-bold">Paramètres</h1>;
+  return <h1>Paramètres</h1>;
 }
 
 function NotFound() {
@@ -182,15 +182,15 @@ function App() {
 }`,
     validate: (code: string | undefined) => {
       if (!code) return false;
-      return code.includes("MainLayout") &&
-             code.includes("DashboardLayout") &&
+      return code.includes("Route") &&
              code.includes("PrivateRoute") &&
+             code.includes(":name") &&
              code.includes("useParams") &&
              code.includes("NavLink") &&
-             code.includes(":name");
+             code.includes("*");
     },
-    hint: "Vérifie que tu as :\n- Les deux layouts (Main et Dashboard)\n- La route protégée pour le dashboard\n- Les NavLink avec styles actifs\n- Le typage des paramètres d'URL\n- La gestion des 404",
-    successMessage: "🎉 Félicitations ! Tu as créé une application React complète avec navigation.\nTu maîtrises maintenant les routes, les layouts et la navigation !",
+    hint: "Vérifie que tu as :\n- Toutes les routes (/, /about, /profile/:name, /admin)\n- Une route * pour le 404\n- La route admin protégée avec PrivateRoute\n- Tous les liens dans la Navbar",
+    successMessage: "🎉 Félicitations ! Tu as créé une application complète avec routage.\nTu maîtrises maintenant la navigation en React !",
     solution: `// Solution complète dans le code initial`
   }
 ];

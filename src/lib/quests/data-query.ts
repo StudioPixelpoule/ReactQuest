@@ -313,7 +313,7 @@ Pour ce projet final, tu vas créer un blog qui utilise toutes les fonctionnalit
 > \`['post', id]\`
     `,
     initialCode: `import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
 interface Post {
@@ -334,14 +334,27 @@ function PostList() {
     },
   });
 
-  if (isLoading) return <p>Chargement...</p>;
+  if (isLoading) {
+    return (
+      <div className="p-4 border rounded animate-pulse">
+        <div className="h-4 bg-muted rounded w-1/4 mb-4"></div>
+        <div className="space-y-2">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="h-10 bg-muted rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       {data?.map((post) => (
-        <article key={post.id} className="p-4 border rounded">
-          <h2 className="text-xl font-bold">{post.title}</h2>
-          <p className="mt-2 text-muted-foreground">{post.body}</p>
+        <article key={post.id} className="p-4 border rounded hover:border-primary">
+          <Link to={'/post/' + post.id} className="block">
+            <h2 className="text-xl font-bold hover:text-primary">{post.title}</h2>
+            <p className="mt-2 text-muted-foreground line-clamp-2">{post.body}</p>
+          </Link>
         </article>
       ))}
     </div>
@@ -363,12 +376,25 @@ function PostDetail() {
     enabled: !!id,
   });
 
-  if (isLoading) return <p>Chargement...</p>;
+  if (isLoading) {
+    return (
+      <div className="p-4 border rounded animate-pulse">
+        <div className="h-8 bg-muted rounded w-1/2 mb-4"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-3/4"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!data) return null;
 
   return (
     <article className="max-w-2xl mx-auto p-6 space-y-4">
+      <Link to="/" className="text-primary hover:underline">
+        ← Retour aux articles
+      </Link>
       <h1 className="text-3xl font-bold">{data.title}</h1>
       <p className="text-lg text-muted-foreground">{data.body}</p>
     </article>
@@ -384,7 +410,7 @@ function PostDetail() {
     hint: "Vérifie que tu as :\n- Utilisé des queryKey uniques\n- Typé les réponses\n- Géré le enabled avec l'id\n- Affiché les états de chargement",
     successMessage: "🎉 Félicitations ! Tu as créé un blog optimisé avec React Query.\nTu maîtrises maintenant la gestion avancée des données en React !",
     solution: `import { useQuery } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 
 interface Post {
@@ -405,14 +431,27 @@ function PostList() {
     },
   });
 
-  if (isLoading) return <p>Chargement...</p>;
+  if (isLoading) {
+    return (
+      <div className="p-4 border rounded animate-pulse">
+        <div className="h-4 bg-muted rounded w-1/4 mb-4"></div>
+        <div className="space-y-2">
+          {[1, 2, 3].map((n) => (
+            <div key={n} className="h-10 bg-muted rounded"></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
       {data?.map((post) => (
-        <article key={post.id} className="p-4 border rounded">
-          <h2 className="text-xl font-bold">{post.title}</h2>
-          <p className="mt-2 text-muted-foreground">{post.body}</p>
+        <article key={post.id} className="p-4 border rounded hover:border-primary">
+          <Link to={'/post/' + post.id} className="block">
+            <h2 className="text-xl font-bold hover:text-primary">{post.title}</h2>
+            <p className="mt-2 text-muted-foreground line-clamp-2">{post.body}</p>
+          </Link>
         </article>
       ))}
     </div>
@@ -434,12 +473,25 @@ function PostDetail() {
     enabled: !!id,
   });
 
-  if (isLoading) return <p>Chargement...</p>;
+  if (isLoading) {
+    return (
+      <div className="p-4 border rounded animate-pulse">
+        <div className="h-8 bg-muted rounded w-1/2 mb-4"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-3/4"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!data) return null;
 
   return (
     <article className="max-w-2xl mx-auto p-6 space-y-4">
+      <Link to="/" className="text-primary hover:underline">
+        ← Retour aux articles
+      </Link>
       <h1 className="text-3xl font-bold">{data.title}</h1>
       <p className="text-lg text-muted-foreground">{data.body}</p>
     </article>

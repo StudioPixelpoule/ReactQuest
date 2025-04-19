@@ -85,7 +85,7 @@ Le message doit alterner entre :
 > const [message, setMessage] = useState("");
 > \`\`\`
     `,
-    initialCode: `import { useState } from 'react';
+    initialCode: `import { useState, useEffect } from 'react';
 
 function MultiState() {
   // Crée deux états : count et message
@@ -127,6 +127,159 @@ function MultiState() {
       <p>Compteur : {count}</p>
       <button onClick={() => setCount(count + 1)}>
         Incrémenter
+      </button>
+    </div>
+  );
+}`
+  },
+  {
+    title: "🔹 Étape 3 — Input Contrôlé",
+    content: `
+### Les champs contrôlés
+
+En React, on peut **contrôler** les champs de formulaire avec le state.
+C'est ce qu'on appelle un **composant contrôlé**.
+
+Tu vas créer un champ texte qui :
+- Stocke sa valeur dans le state
+- Met à jour le state à chaque changement
+- Affiche la valeur en temps réel
+
+---
+
+> 💡 Conseil de React-Bot :  
+> Un input contrôlé utilise :
+> - \`value={state}\` pour afficher la valeur
+> - \`onChange\` pour la mettre à jour :
+> \`\`\`tsx
+> onChange={(e) => setState(e.target.value)}
+> \`\`\`
+    `,
+    initialCode: `import { useState } from 'react';
+
+function NameInput() {
+  const [name, setName] = useState<string>("");
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={/* état ici */}
+        onChange={/* mettre à jour le state */}
+      />
+      <p>Bonjour {/* afficher le nom ici */}</p>
+    </div>
+  );
+}`,
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("value={name}") &&
+             code.includes("onChange") &&
+             code.includes("setName") &&
+             code.includes("e.target.value");
+    },
+    hint: "Vérifie que tu as :\n- Lié value à l'état name\n- Utilisé onChange pour mettre à jour name\n- Affiché name dans le message de bienvenue",
+    successMessage: "Parfait ! Tu maîtrises maintenant les composants contrôlés.",
+    solution: `import { useState } from 'react';
+
+function NameInput() {
+  const [name, setName] = useState<string>("");
+
+  return (
+    <div>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <p>Bonjour {name}</p>
+    </div>
+  );
+}`
+  },
+  {
+    title: "🎓 Mini-Projet Final — DashboardWidget",
+    content: `
+### Le Widget de Tableau de Bord
+
+Pour ce projet final, tu vas créer une mini-application qui combine tout ce que tu as appris :
+- Un champ pour le prénom
+- Un compteur de clics
+- Un bouton qui affiche une alerte personnalisée
+
+Le widget doit :
+1. Permettre de saisir un prénom
+2. Compter les clics sur un bouton
+3. Avoir un bouton "Saluer" qui affiche :
+   "Bonjour [nom] ! Tu as cliqué [X] fois."
+
+---
+
+> 💡 Conseil de React-Bot :  
+> Utilise \`alert()\` pour afficher le message final :
+> \`\`\`tsx
+> alert(\`Bonjour \${name} ! Tu as cliqué \${count} fois.\`);
+> \`\`\`
+    `,
+    initialCode: `import { useState } from 'react';
+
+function DashboardWidget() {
+  // Crée les états nécessaires ici
+  
+  return (
+    <div className="p-4 border rounded-lg">
+      {/* Ajoute :
+        - Un input pour le nom
+        - Un affichage du compteur
+        - Un bouton pour incrémenter
+        - Un bouton pour afficher l'alerte
+      */}
+    </div>
+  );
+}`,
+    validate: (code: string | undefined) => {
+      if (!code) return false;
+      return code.includes("useState<string>") &&
+             code.includes("useState<number>") &&
+             code.includes("alert") &&
+             code.includes("onChange") &&
+             code.includes("onClick") &&
+             code.includes("Bonjour") &&
+             code.includes("cliqué");
+    },
+    hint: "N'oublie pas :\n- Créé les deux états (name et count)\n- Un input contrôlé pour le nom\n- Un bouton pour incrémenter count\n- Un bouton qui déclenche l'alert avec le message formaté",
+    successMessage: "🎉 Félicitations ! Tu as créé un widget interactif complet !\nTu maîtrises maintenant la gestion d'état en React.",
+    solution: `import { useState } from 'react';
+
+function DashboardWidget() {
+  const [name, setName] = useState<string>("");
+  const [count, setCount] = useState<number>(0);
+
+  return (
+    <div className="p-4 border rounded-lg space-y-4">
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Ton prénom"
+        className="border p-2 rounded w-full"
+      />
+      
+      <div>
+        <p>Nombre de clics : {count}</p>
+        <button
+          onClick={() => setCount(count + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Cliquer
+        </button>
+      </div>
+
+      <button
+        onClick={() => alert(\`Bonjour \${name} ! Tu as cliqué \${count} fois.\`)}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded w-full"
+      >
+        Saluer
       </button>
     </div>
   );

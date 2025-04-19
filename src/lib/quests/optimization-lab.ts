@@ -22,6 +22,7 @@ Tu commenceras par optimiser un calcul avec useMemo.
 function HeavyComponent() {
   const [count, setCount] = useState(0);
 
+  // Utilise useMemo pour mémoriser ce calcul lourd
   const heavyResult = useMemo(() => {
     console.log("Calcul en cours...");
     let total = 0;
@@ -31,13 +32,22 @@ function HeavyComponent() {
 
   return (
     <div className="p-4 space-y-4">
-      <p className="text-lg">Résultat lourd : {heavyResult}</p>
-      <button
-        onClick={() => setCount(count + 1)}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        +1 ({count})
-      </button>
+      <div className="p-4 border rounded">
+        <p className="text-lg mb-2">Résultat du calcul lourd :</p>
+        <p className="text-2xl font-bold">{heavyResult}</p>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setCount(count + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Incrémenter
+        </button>
+        <span className="text-muted-foreground">
+          Compteur : {count}
+        </span>
+      </div>
     </div>
   );
 }`,
@@ -64,13 +74,22 @@ function HeavyComponent() {
 
   return (
     <div className="p-4 space-y-4">
-      <p className="text-lg">Résultat lourd : {heavyResult}</p>
-      <button
-        onClick={() => setCount(count + 1)}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        +1 ({count})
-      </button>
+      <div className="p-4 border rounded">
+        <p className="text-lg mb-2">Résultat du calcul lourd :</p>
+        <p className="text-2xl font-bold">{heavyResult}</p>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setCount(count + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Incrémenter
+        </button>
+        <span className="text-muted-foreground">
+          Compteur : {count}
+        </span>
+      </div>
     </div>
   );
 }`
@@ -96,54 +115,116 @@ function HeavyComponent() {
     `,
     initialCode: `import { useState, useCallback } from "react";
 
-function CallbackExample() {
-  const [value, setValue] = useState(0);
+interface ItemProps {
+  id: number;
+  onDelete: (id: number) => void;
+}
 
-  const handleClick = useCallback(() => {
-    setValue(v => v + 1);
-    console.log("Click !");
-  }, []);
+// Composant enfant mémorisé
+const Item = memo(function Item({ id, onDelete }: ItemProps) {
+  console.log(\`Item \${id} rendu\`);
+  return (
+    <div className="flex items-center justify-between p-4 border rounded">
+      <span>Item {id}</span>
+      <button
+        onClick={() => onDelete(id)}
+        className="px-3 py-1 text-sm bg-destructive text-destructive-foreground rounded"
+      >
+        Supprimer
+      </button>
+    </div>
+  );
+});
+
+function ItemList() {
+  const [items, setItems] = useState([1, 2, 3]);
+  const [count, setCount] = useState(0);
+
+  // Stabilise cette fonction avec useCallback
+  const handleDelete = (id: number) => {
+    setItems(items => items.filter(item => item !== id));
+  };
 
   return (
     <div className="p-4 space-y-4">
-      <p className="text-lg">Valeur : {value}</p>
-      <button
-        onClick={handleClick}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        Incrémenter
-      </button>
+      <div className="space-y-2">
+        {items.map(id => (
+          <Item key={id} id={id} onDelete={handleDelete} />
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setCount(c => c + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Incrémenter ({count})
+        </button>
+        <p className="text-sm text-muted-foreground">
+          (Ce bouton force un rendu)
+        </p>
+      </div>
     </div>
   );
 }`,
     validate: (code: string | undefined) => {
       if (!code) return false;
       return code.includes("useCallback") &&
-             code.includes("handleClick") &&
-             code.includes("setValue") &&
-             code.includes("Click !");
+             code.includes("handleDelete") &&
+             code.includes("setItems") &&
+             code.includes("memo");
     },
-    hint: "N'oublie pas :\n- D'utiliser useCallback\n- De définir les dépendances\n- D'utiliser setValue avec le callback\n- D'afficher la valeur",
+    hint: "N'oublie pas :\n- D'utiliser useCallback\n- De définir les dépendances\n- D'utiliser la forme fonctionnelle de setItems\n- De mémoriser le composant Item avec memo",
     successMessage: "Super ! Tu sais maintenant stabiliser des fonctions avec useCallback.",
-    solution: `import { useState, useCallback } from "react";
+    solution: `import { useState, useCallback, memo } from "react";
 
-function CallbackExample() {
-  const [value, setValue] = useState(0);
+interface ItemProps {
+  id: number;
+  onDelete: (id: number) => void;
+}
 
-  const handleClick = useCallback(() => {
-    setValue(v => v + 1);
-    console.log("Click !");
-  }, []); // Pas de dépendances car on utilise le callback form de setValue
+const Item = memo(function Item({ id, onDelete }: ItemProps) {
+  console.log(\`Item \${id} rendu\`);
+  return (
+    <div className="flex items-center justify-between p-4 border rounded">
+      <span>Item {id}</span>
+      <button
+        onClick={() => onDelete(id)}
+        className="px-3 py-1 text-sm bg-destructive text-destructive-foreground rounded"
+      >
+        Supprimer
+      </button>
+    </div>
+  );
+});
+
+function ItemList() {
+  const [items, setItems] = useState([1, 2, 3]);
+  const [count, setCount] = useState(0);
+
+  const handleDelete = useCallback((id: number) => {
+    setItems(items => items.filter(item => item !== id));
+  }, []); // Pas de dépendances car on utilise la forme fonctionnelle de setItems
 
   return (
     <div className="p-4 space-y-4">
-      <p className="text-lg">Valeur : {value}</p>
-      <button
-        onClick={handleClick}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        Incrémenter
-      </button>
+      <div className="space-y-2">
+        {items.map(id => (
+          <Item key={id} id={id} onDelete={handleDelete} />
+        ))}
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setCount(c => c + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Incrémenter ({count})
+        </button>
+        <p className="text-sm text-muted-foreground">
+          (Ce bouton force un rendu)
+        </p>
+      </div>
     </div>
   );
 }`
@@ -162,34 +243,40 @@ function CallbackExample() {
 > 💡 Conseil de React-Bot :  
 > Un composant mémorisé ne se met à jour que si ses props changent !
     `,
-    initialCode: `import { memo } from "react";
+    initialCode: `import { memo, useState } from "react";
 
 interface TitleProps {
   text: string;
 }
 
-const Title = memo(function Title({ text }: TitleProps) {
+// Mémorise ce composant avec memo
+function Title({ text }: TitleProps) {
   console.log("Rendu de Title");
   return (
     <h2 className="text-2xl font-bold">
       {text}
     </h2>
   );
-});
+}
 
-// Exemple d'utilisation :
 function App() {
   const [count, setCount] = useState(0);
   
   return (
     <div className="p-4 space-y-4">
       <Title text="Mon titre" />
-      <button
-        onClick={() => setCount(c => c + 1)}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        Count: {count}
-      </button>
+      
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setCount(c => c + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Incrémenter ({count})
+        </button>
+        <p className="text-sm text-muted-foreground">
+          (Ce bouton ne devrait pas causer de rendu de Title)
+        </p>
+      </div>
     </div>
   );
 }`,
@@ -223,12 +310,18 @@ function App() {
   return (
     <div className="p-4 space-y-4">
       <Title text="Mon titre" />
-      <button
-        onClick={() => setCount(c => c + 1)}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        Count: {count}
-      </button>
+      
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setCount(c => c + 1)}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        >
+          Incrémenter ({count})
+        </button>
+        <p className="text-sm text-muted-foreground">
+          (Ce bouton ne devrait pas causer de rendu de Title)
+        </p>
+      </div>
     </div>
   );
 }`
@@ -249,29 +342,33 @@ function App() {
     `,
     initialCode: `import { lazy, Suspense, useState } from "react";
 
-const Settings = lazy(() => import("./Settings"));
+// Simule un composant lourd
+const HeavyChart = lazy(() => import("./HeavyChart"));
 
-function App() {
-  const [show, setShow] = useState(false);
+function Dashboard() {
+  const [showChart, setShowChart] = useState(false);
 
   return (
     <div className="p-4 space-y-4">
       <button
-        onClick={() => setShow(!show)}
+        onClick={() => setShowChart(!showChart)}
         className="px-4 py-2 bg-primary text-primary-foreground rounded"
       >
-        {show ? "Cacher" : "Afficher"} les paramètres
+        {showChart ? "Cacher" : "Afficher"} le graphique
       </button>
 
-      {show && (
+      {showChart && (
         <Suspense
           fallback={
             <div className="p-4 border rounded animate-pulse">
-              Chargement...
+              <div className="h-4 bg-muted rounded w-1/4 mb-4"></div>
+              <div className="space-y-2">
+                <div className="h-32 bg-muted rounded"></div>
+              </div>
             </div>
           }
         >
-          <Settings />
+          <HeavyChart />
         </Suspense>
       )}
     </div>
@@ -282,40 +379,11 @@ function App() {
       return code.includes("lazy") &&
              code.includes("Suspense") &&
              code.includes("fallback") &&
-             code.includes("Settings");
+             code.includes("HeavyChart");
     },
     hint: "N'oublie pas :\n- D'utiliser lazy pour importer\n- D'ajouter Suspense\n- De définir un fallback\n- De gérer l'affichage conditionnel",
     successMessage: "Parfait ! Tu sais maintenant faire du code splitting avec lazy.",
-    solution: `import { lazy, Suspense, useState } from "react";
-
-const Settings = lazy(() => import("./Settings"));
-
-function App() {
-  const [show, setShow] = useState(false);
-
-  return (
-    <div className="p-4 space-y-4">
-      <button
-        onClick={() => setShow(!show)}
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        {show ? "Cacher" : "Afficher"} les paramètres
-      </button>
-
-      {show && (
-        <Suspense
-          fallback={
-            <div className="p-4 border rounded animate-pulse">
-              Chargement...
-            </div>
-          }
-        >
-          <Settings />
-        </Suspense>
-      )}
-    </div>
-  );
-}`
+    solution: `// Solution complète dans le code initial`
   }
 ];
 

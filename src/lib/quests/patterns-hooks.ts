@@ -24,7 +24,7 @@ Tu commenceras par créer un hook \`useCounter\` qui encapsule la logique d'un c
 
 import { useState } from 'react';
 
-export function useCounter() {
+export function useCounter(initialValue: number = 0) {
   // État du compteur
   
   // Fonction d'incrémentation
@@ -37,7 +37,7 @@ export function useCounter() {
 
 // Exemple d'utilisation :
 function Counter() {
-  const { count, increment } = useCounter();
+  const { count, increment } = useCounter(0);
   
   return (
     <div className="space-y-2">
@@ -62,8 +62,8 @@ function Counter() {
     successMessage: "Bravo ! Tu viens de créer ton premier hook personnalisé.\nIl encapsule parfaitement la logique du compteur !",
     solution: `import { useState } from 'react';
 
-export function useCounter() {
-  const [count, setCount] = useState(0);
+export function useCounter(initialValue: number = 0) {
+  const [count, setCount] = useState(initialValue);
   
   const increment = () => setCount(count + 1);
   
@@ -74,7 +74,7 @@ export function useCounter() {
 }
 
 function Counter() {
-  const { count, increment } = useCounter();
+  const { count, increment } = useCounter(0);
   
   return (
     <div className="space-y-2">

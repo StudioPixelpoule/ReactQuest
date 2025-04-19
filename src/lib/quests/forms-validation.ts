@@ -27,11 +27,17 @@ function EmailForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<FormData>();
 
-  const onSubmit = (data: FormData) => {
-    console.log('Email soumis :', data.email);
+  const onSubmit = async (data: FormData) => {
+    try {
+      // Simuler un appel API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Email soumis :', data.email);
+    } catch (error) {
+      console.error('Erreur :', error);
+    }
   };
 
   return (
@@ -49,8 +55,10 @@ function EmailForm() {
               message: "Format d'email invalide",
             },
           })}
-          className="w-full p-2 border rounded"
-          placeholder="ton@email.com"
+          className={\`w-full p-2 border rounded transition-colors \${
+            errors.email ? 'border-destructive' : ''
+          }\`}
+          disabled={isSubmitting}
         />
         {errors.email && (
           <p className="mt-1 text-sm text-destructive">
@@ -60,9 +68,10 @@ function EmailForm() {
       </div>
       <button
         type="submit"
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        disabled={isSubmitting}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
       >
-        Envoyer
+        {isSubmitting ? 'Envoi...' : 'Envoyer'}
       </button>
     </form>
   );
@@ -76,56 +85,7 @@ function EmailForm() {
     },
     hint: "Vérifie que tu as :\n- Utilisé useForm avec le bon type\n- Configuré register avec les règles\n- Affiché les erreurs\n- Implémenté onSubmit",
     successMessage: "Bravo ! Tu sais maintenant utiliser React Hook Form.\nC'est beaucoup plus simple que useState, non ?",
-    solution: `import { useForm } from "react-hook-form";
-
-interface FormData {
-  email: string;
-}
-
-function EmailForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>();
-
-  const onSubmit = (data: FormData) => {
-    console.log('Email soumis :', data.email);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email
-        </label>
-        <input
-          id="email"
-          {...register("email", {
-            required: "L'email est requis",
-            pattern: {
-              value: /^\\S+@\\S+$/i,
-              message: "Format d'email invalide",
-            },
-          })}
-          className="w-full p-2 border rounded"
-          placeholder="ton@email.com"
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.email.message}
-          </p>
-        )}
-      </div>
-      <button
-        type="submit"
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        Envoyer
-      </button>
-    </form>
-  );
-}`
+    solution: `// Solution complète dans le code initial`
   },
   {
     title: "🔸 Étape 2 — Validation avec Zod",
@@ -166,13 +126,19 @@ function ZodForm() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<Schema>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: Schema) => {
-    console.log('Données valides :', data);
+  const onSubmit = async (data: Schema) => {
+    try {
+      // Simuler un appel API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Données valides :', data);
+    } catch (error) {
+      console.error('Erreur :', error);
+    }
   };
 
   return (
@@ -185,7 +151,10 @@ function ZodForm() {
           id="email"
           type="email"
           {...register("email")}
-          className="w-full p-2 border rounded"
+          className={\`w-full p-2 border rounded transition-colors \${
+            errors.email ? 'border-destructive' : ''
+          }\`}
+          disabled={isSubmitting}
         />
         {errors.email && (
           <p className="mt-1 text-sm text-destructive">
@@ -202,7 +171,10 @@ function ZodForm() {
           id="age"
           type="number"
           {...register("age", { valueAsNumber: true })}
-          className="w-full p-2 border rounded"
+          className={\`w-full p-2 border rounded transition-colors \${
+            errors.age ? 'border-destructive' : ''
+          }\`}
+          disabled={isSubmitting}
         />
         {errors.age && (
           <p className="mt-1 text-sm text-destructive">
@@ -213,9 +185,10 @@ function ZodForm() {
 
       <button
         type="submit"
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
+        disabled={isSubmitting}
+        className="px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
       >
-        Valider
+        {isSubmitting ? 'Validation...' : 'Valider'}
       </button>
     </form>
   );
@@ -229,79 +202,7 @@ function ZodForm() {
     },
     hint: "Vérifie que tu as :\n- Créé le schéma Zod\n- Utilisé zodResolver\n- Typé le formulaire avec z.infer\n- Configuré register pour les nombres",
     successMessage: "Excellent ! Tu sais maintenant utiliser Zod pour une validation déclarative.",
-    solution: `import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-const schema = z.object({
-  email: z.string()
-    .min(1, "L'email est requis")
-    .email("Format d'email invalide"),
-  age: z.number()
-    .min(18, "Vous devez avoir au moins 18 ans")
-    .max(120, "Âge invalide"),
-});
-
-type Schema = z.infer<typeof schema>;
-
-function ZodForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Schema>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = (data: Schema) => {
-    console.log('Données valides :', data);
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-1">
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          {...register("email")}
-          className="w-full p-2 border rounded"
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.email.message}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="age" className="block text-sm font-medium mb-1">
-          Âge
-        </label>
-        <input
-          id="age"
-          type="number"
-          {...register("age", { valueAsNumber: true })}
-          className="w-full p-2 border rounded"
-        />
-        {errors.age && (
-          <p className="mt-1 text-sm text-destructive">
-            {errors.age.message}
-          </p>
-        )}
-      </div>
-
-      <button
-        type="submit"
-        className="px-4 py-2 bg-primary text-primary-foreground rounded"
-      >
-        Valider
-      </button>
-    </form>
-  );
-}`
+    solution: `// Solution complète dans le code initial`
   },
   {
     title: "🎓 Mini-Projet Final — Formulaire de contact",
@@ -353,10 +254,14 @@ function ContactForm() {
   });
 
   const onSubmit = async (data: ContactForm) => {
-    // Simuler un envoi
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Message envoyé :', data);
-    reset();
+    try {
+      // Simuler un appel API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Message envoyé :', data);
+      reset();
+    } catch (error) {
+      console.error('Erreur :', error);
+    }
   };
 
   return (
@@ -377,7 +282,10 @@ function ContactForm() {
           <input
             id="name"
             {...register("name")}
-            className="w-full p-2 border rounded"
+            className={\`w-full p-2 border rounded transition-colors \${
+              errors.name ? 'border-destructive' : ''
+            }\`}
+            disabled={isSubmitting}
           />
           {errors.name && (
             <p className="mt-1 text-sm text-destructive">
@@ -394,7 +302,10 @@ function ContactForm() {
             id="email"
             type="email"
             {...register("email")}
-            className="w-full p-2 border rounded"
+            className={\`w-full p-2 border rounded transition-colors \${
+              errors.email ? 'border-destructive' : ''
+            }\`}
+            disabled={isSubmitting}
           />
           {errors.email && (
             <p className="mt-1 text-sm text-destructive">
@@ -410,7 +321,10 @@ function ContactForm() {
           <select
             id="type"
             {...register("type")}
-            className="w-full p-2 border rounded"
+            className={\`w-full p-2 border rounded transition-colors \${
+              errors.type ? 'border-destructive' : ''
+            }\`}
+            disabled={isSubmitting}
           >
             <option value="">Sélectionnez un type</option>
             <option value="support">Support technique</option>
@@ -432,7 +346,10 @@ function ContactForm() {
             id="message"
             {...register("message")}
             rows={4}
-            className="w-full p-2 border rounded"
+            className={\`w-full p-2 border rounded transition-colors \${
+              errors.message ? 'border-destructive' : ''
+            }\`}
+            disabled={isSubmitting}
           />
           {errors.message && (
             <p className="mt-1 text-sm text-destructive">
@@ -446,7 +363,7 @@ function ContactForm() {
           disabled={isSubmitting}
           className="w-full px-4 py-2 bg-primary text-primary-foreground rounded disabled:opacity-50"
         >
-          {isSubmitting ? "Envoi..." : "Envoyer"}
+          {isSubmitting ? 'Envoi...' : 'Envoyer'}
         </button>
       </form>
     </div>
@@ -454,7 +371,7 @@ function ContactForm() {
 }`,
     validate: (code: string | undefined) => {
       if (!code) return false;
-      return code.includes("z.object") &&
+      return code.includes("useForm") &&
              code.includes("zodResolver") &&
              code.includes("reset") &&
              code.includes("isSubmitSuccessful");

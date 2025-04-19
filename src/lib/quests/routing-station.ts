@@ -216,9 +216,13 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   if (!isAuthenticated) {
-    return <p>Accès refusé</p>;
+    return (
+      <div className="p-4 bg-destructive/10 text-destructive rounded-lg">
+        Accès refusé
+      </div>
+    );
   }
-
+  
   return <>{children}</>;
 }
 
@@ -285,9 +289,13 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   if (!isAuthenticated) {
-    return <p>Accès refusé</p>;
+    return (
+      <div className="p-4 bg-destructive/10 text-destructive rounded-lg">
+        Accès refusé
+      </div>
+    );
   }
-
+  
   return <>{children}</>;
 }
 
