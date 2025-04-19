@@ -31,7 +31,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   // Create separate audio instances for different sounds
   const [landingAudio] = useState(() => {
     console.log('[Audio] Creating landing audio instance');
-    const audio = new Audio('/public/assets/audio/audio.mp3');
+    const audio = new Audio('/assets/audio/audio.mp3');
     audio.loop = true;
     audio.volume = 0.3;
     
@@ -71,7 +71,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const [modalAudio] = useState(() => {
     console.log('[Audio] Creating modal audio instance');
-    const audio = new Audio('/public/assets/audio/audio2.mp3');
+    const audio = new Audio('/assets/audio/audio2.mp3');
     audio.loop = true;
     audio.volume = 0.3;
     
@@ -111,7 +111,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const [backgroundAudio] = useState(() => {
     console.log('[Audio] Creating background audio instance');
-    const audio = new Audio('/public/assets/audio/audio3.mp3');
+    const audio = new Audio('/assets/audio/audio3.mp3');
     audio.loop = true;
     audio.volume = 0.3;
     
@@ -174,6 +174,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
           console.log('[Audio] Play request was aborted, this is expected during quick transitions');
         } else if (error.name === 'NotAllowedError') {
           console.log('[Audio] Play request was not allowed, waiting for user interaction');
+        } else if (error.name === 'NotSupportedError') {
+          console.error('[Audio] Audio format not supported or file not found');
         } else {
           console.error('[Audio] Failed to play audio:', error);
         }
