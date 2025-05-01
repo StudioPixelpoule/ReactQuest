@@ -77,6 +77,23 @@ export function QuestEditor({
             scrollBeyondLastLine: false,
             readOnly: false,
             automaticLayout: true,
+            // Configuration pour TypeScript/React
+            "javascript.validate.enable": false, // Désactive la validation JS par défaut
+            "typescript.validate.enable": false, // Désactive la validation TS par défaut
+            "editor.formatOnType": true,
+            "editor.formatOnPaste": true,
+            "editor.tabSize": 2
+          }}
+          beforeMount={(monaco) => {
+            // Configuration de l'environnement TypeScript
+            monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+              jsx: monaco.languages.typescript.JsxEmit.React,
+              jsxFactory: 'React.createElement',
+              reactNamespace: 'React',
+              allowNonTsExtensions: true,
+              allowJs: true,
+              target: monaco.languages.typescript.ScriptTarget.Latest
+            });
           }}
         />
       </div>
